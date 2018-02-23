@@ -16,9 +16,9 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return null;
+        return new MovieViewHolder(parent);
     }
 
     @Override
