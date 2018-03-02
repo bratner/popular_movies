@@ -33,7 +33,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         /* TODO: get a movie poster from cache or from the web */
         holder.mGridItemTextView.setText("Movie: "+position);
-        holder.mMoviePosterImageView.setImageResource(R.drawable.deadpool_international_poster);
+        holder.mMoviePosterImageView.setImageResource(R.drawable.zootopia_poster_small);
     }
 
 
