@@ -15,7 +15,7 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView = findViewById(R.id.movie_grid_rv);
 
         /*TODO: actually calculate the number of columns based on width DP*/
-        int calculate_number_of_columns = 2;
+        int calculate_number_of_columns = getResources().getInteger(R.integer.movie_grid_number_of_columns);
         mGridRecyclerView.setLayoutManager(
                 new GridLayoutManager(this,calculate_number_of_columns));
 
