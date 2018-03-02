@@ -52,7 +52,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
-            mMoviePosterImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            //mMoviePosterImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         }
 
