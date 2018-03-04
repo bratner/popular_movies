@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies;
 
 import android.graphics.Rect;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
@@ -34,6 +35,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         /* TODO: get a movie poster from cache or from the web */
         holder.mGridItemTextView.setText("Movie: "+position);
         holder.mMoviePosterImageView.setImageResource(R.drawable.zootopia_poster_small);
+
     }
 
 
@@ -49,11 +51,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
-            //mMoviePosterImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
         }
 
 
