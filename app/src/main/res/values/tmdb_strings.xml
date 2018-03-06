@@ -4,7 +4,7 @@
 {
     "images": {
         "base_url": "http://image.tmdb.org/t/p/",
-        "secure_base_url": "https://image.tmdb.org/t/p/",
+            "secure_base_url": "https://image.tmdb.org/t/p/",
         "backdrop_sizes": [
             "w300",
             "w780",
@@ -99,4 +99,5 @@
     ]
 }
     </string>
+    <string name="tmdb_images_base_surl">https://image.tmdb.org/t/p/</string>
 </resources>

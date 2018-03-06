@@ -18,32 +18,34 @@ import java.util.Date;
 
 public class Movie {
 
-    public static final String TAG = Movie.class.getSimpleName();
-    public static final String id_field = "id";
-    public static final String title_field = "title";
-    public static final String original_title_field = "original_title";
-    public static final String poster_path_field = "poster_path";
-    public static final String backdrop_path_field = "backdrop_path";
-    public static final String overview_field = "overview";
-    public static final String vote_average_field = "vote_average";
-    public static final String vote_count_field = "vote_count";
-    public static final String release_date_field = "release_date";
-    public static final String date_field_format = "yyyy-mm-dd";
+    /* Class constants */
+    
+    private static final String TAG = Movie.class.getSimpleName();
+    private static final String ID_FIELD = "id";
+    private static final String TITLE_FIELD = "title";
+    private static final String ORIGINAL_TITLE_FIELD = "original_title";
+    private static final String POSTER_PATH_FIELD = "poster_path";
+    private static final String BACKDROP_PATH_FIELD = "backdrop_path";
+    private static final String OVERVIEW_FIELD = "overview";
+    private static final String VOTE_AVERAGE_FIELD = "vote_average";
+    private static final String VOTE_COUNT_FIELD = "vote_count";
+    private static final String RELEASE_DATE_FIELD = "release_date";
 
+    static final String DATE_FIELD_FORMAT = "yyyy-mm-dd";
 
-
-    int id;
-    String title;
-    String original_title;
-    String poster_path;
-    String backdrop_path;
-    String overview;
-    Double vote_average;
-    int vote_count;
-    Long release_date;
+    /* Instance variables */
+    private int id;
+    private String title;
+    private String original_title;
+    private String poster_path;
+    private String backdrop_path;
+    private String overview;
+    private Double vote_average;
+    private int vote_count;
+    private Long release_date;
 
     /**
-     * Takes in a JSON object and returns a newly created Movie object
+     * Takes in a JSON object and returns a newly created Movie object or null on error.
 
      */
     public static Movie parseJsonToMovie(JSONObject movie_json)
@@ -53,19 +55,19 @@ public class Movie {
         /* All fields are mandatory, using exceptions to catch missing fields */
         try {
 
-            m.id = movie_json.getInt(id_field);
-            m.title = movie_json.getString(title_field);
-            m.original_title = movie_json.getString(original_title_field);
-            m.poster_path = movie_json.getString(poster_path_field);
-            m.backdrop_path = movie_json.getString(backdrop_path_field);
-            m.overview = movie_json.getString(overview_field);
-            m.vote_average = movie_json.getDouble(vote_average_field);
-            m.vote_count = movie_json.getInt(vote_count_field);
+            m.id = movie_json.getInt(ID_FIELD);
+            m.title = movie_json.getString(TITLE_FIELD);
+            m.original_title = movie_json.getString(ORIGINAL_TITLE_FIELD);
+            m.poster_path = movie_json.getString(POSTER_PATH_FIELD);
+            m.backdrop_path = movie_json.getString(BACKDROP_PATH_FIELD);
+            m.overview = movie_json.getString(OVERVIEW_FIELD);
+            m.vote_average = movie_json.getDouble(VOTE_AVERAGE_FIELD);
+            m.vote_count = movie_json.getInt(VOTE_COUNT_FIELD);
 
-            String release_date_string = movie_json.getString(release_date_field);
-            SimpleDateFormat sdf = new SimpleDateFormat(date_field_format);
+            String release_date_string = movie_json.getString(RELEASE_DATE_FIELD);
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FIELD_FORMAT);
             Date release_date = sdf.parse(release_date_string);
-            
+
             m.release_date = release_date.getTime();
 
         } catch (JSONException jex) {
