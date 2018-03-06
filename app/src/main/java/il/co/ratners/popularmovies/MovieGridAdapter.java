@@ -1,5 +1,6 @@
 package il.co.ratners.popularmovies;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import il.co.ratners.popularmovies.data.Movie;
+import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 /**
  * Created by bratner on 2/24/18.
@@ -34,7 +38,9 @@ import il.co.ratners.popularmovies.data.Movie;
 
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
    // int mFakeDataItems = 100;
+    public static final String TAG = MovieGridAdapter.class.getSimpleName();
     int mListStartPosition = 0;
+    Context mContext;
     ArrayList<Movie> mMovies;
 
     /**
@@ -102,12 +108,15 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         protected void onPostExecute(ArrayList<Movie> movies) {
             super.onPostExecute(movies);
             mMovies = movies;
+            MovieGridAdapter.this.notifyDataSetChanged();
         }
     };
 
-    public MovieGridAdapter() {
+    public MovieGridAdapter(Context context) {
+
         MovieGetterTask task = new MovieGetterTask();
         mMovies = new ArrayList<>();
+        mContext = context;
         task.execute();
 
 
@@ -126,8 +135,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         /* TODO: get a movie poster from cache or from the web */
         holder.mGridItemTextView.setText(mMovies.get(position).getTitle());
-        holder.mMoviePosterImageView.setImageResource(R.drawable.zootopia_poster_small);
-
+        String url = TheMovieDB.getMovieImageURL(mMovies.get(position).getPoster_path());
+        Log.d(TAG, url);
+        Picasso.with(holder.mMoviePosterImageView.getContext())
+                .load(url).into(holder.mMoviePosterImageView);
     }
 
 

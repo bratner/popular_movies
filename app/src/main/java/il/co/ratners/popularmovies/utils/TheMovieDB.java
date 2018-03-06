@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class TheMovieDB {
 
     /* TODO: consider getting and parsing TMDB configuration */
-    public static final String IMAGES_URL = "";
+    public static final String IMAGES_URL = "https://image.tmdb.org/t/p/";
     public static final String DEFAULT_IMAGE_SIZE = "w342";
 
     public static String sImageSize = DEFAULT_IMAGE_SIZE;

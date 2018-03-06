@@ -19,6 +19,6 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView.setLayoutManager(
                 new GridLayoutManager(this,calculate_number_of_columns));
 
-        mGridRecyclerView.setAdapter(new MovieGridAdapter());
+        mGridRecyclerView.setAdapter(new MovieGridAdapter(this));
     }
 }
