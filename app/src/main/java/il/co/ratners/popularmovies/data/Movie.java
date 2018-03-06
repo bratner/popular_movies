@@ -80,4 +80,12 @@ public class Movie {
 
         return m;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getPoster_path() {
+        return poster_path;
+    }
 }
