@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 
 public class GridActivity extends AppCompatActivity {
@@ -21,4 +23,12 @@ public class GridActivity extends AppCompatActivity {
 
         mGridRecyclerView.setAdapter(new MovieGridAdapter(this));
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.grid_menu, menu);
+        return true;
+    }
 }
+
