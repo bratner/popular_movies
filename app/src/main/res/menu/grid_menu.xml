@@ -12,5 +12,6 @@
             <item android:title="Sort by Rating"/>
         </menu>
     </item>
-    <item android:title="About"/>
+    <item android:title="About"
+        android:id="@+id/menu_about"/>
 </menu>

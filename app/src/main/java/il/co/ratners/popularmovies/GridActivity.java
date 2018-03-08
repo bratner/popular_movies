@@ -1,12 +1,17 @@
 package il.co.ratners.popularmovies;
 
+import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 public class GridActivity extends AppCompatActivity {
     RecyclerView mGridRecyclerView;
@@ -29,6 +34,40 @@ public class GridActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.grid_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean ret = false;
+        if (item.getItemId() == R.id.menu_about)
+        {
+            ShowAboutDialog();
+        }
+        return ret;
+    }
+
+    /*
+        Display about dialog mainly to comply with themoviedb
+        attribution requirements.
+        based on: http://android.okhelp.cz/create-about-dialog-android-example/
+     */
+    private void ShowAboutDialog() {
+        // Inflate the about message contents
+        View messageView = getLayoutInflater().
+                inflate(R.layout.about_dialog_layout, null, false);
+
+        // When linking text, force to always use default color. This works
+        // around a pressed color state bug.
+//        TextView textView = (TextView) messageView.findViewById(R.id);
+//        int defaultColor = textView.getTextColors().getDefaultColor();
+//        textView.setTextColor(defaultColor);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher_movies);
+        builder.setTitle(R.string.app_name);
+        builder.setView(messageView);
+        builder.create();
+        builder.show();
     }
 }
 
