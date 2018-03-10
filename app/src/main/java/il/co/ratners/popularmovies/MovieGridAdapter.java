@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.JsonReader;
@@ -42,6 +43,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     int mListStartPosition = 0;
     Context mContext;
     ArrayList<Movie> mMovies;
+    GridLayoutManager.SpanSizeLookup mSpanLookup;
 
     /**
      * This method returns the entire result from the HTTP response.
@@ -70,6 +72,12 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         }
     }
 
+    private boolean isLoadingIndicator(int position)
+    {
+        if (position == mMovies.size())
+                return true;
+        return false;
+    }
 
     class MovieGetterTask extends AsyncTask<Void, Void, ArrayList<Movie>>
     {
@@ -113,31 +121,58 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     };
 
     public MovieGridAdapter(Context context) {
-
-        MovieGetterTask task = new MovieGetterTask();
         mMovies = new ArrayList<>();
         mContext = context;
+        mSpanLookup = new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (isLoadingIndicator(position))
+                    return mContext.getResources().getInteger(R.integer.movie_grid_number_of_columns);
+                return 1;
+            }
+        };
+        MovieGetterTask task = new MovieGetterTask();
         task.execute();
 
 
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (isLoadingIndicator(position))
+            return 1;
+        return 0;
+    }
+
+    @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.movie_grid_item_layout, parent, false);
+        View v;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        switch (viewType) {
+            case 0:
+                v = inflater.inflate(R.layout.movie_grid_item_layout, parent, false);
+                break;
+            case 1:
+                v = inflater.inflate(R.layout.movie_progress_item_layout, parent, false);
+                break;
+                /* TODO: think of error handling */
+            default:
+                return null;
+        }
         return new MovieViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         /* TODO: get a movie poster from cache or from the web */
+        if (holder.getItemViewType() != 0)
+            return;
+
         holder.mGridItemTextView.setText(mMovies.get(position).getTitle());
         String url = TheMovieDB.getMovieImageURL(mMovies.get(position).getPoster_path());
         Log.d(TAG, url);
-        Picasso.with(holder.mMoviePosterImageView.getContext())
+        Picasso.with(mContext)
                 .load(url).into(holder.mMoviePosterImageView);
     }
 
@@ -145,7 +180,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+        return mMovies.size()+1;
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
