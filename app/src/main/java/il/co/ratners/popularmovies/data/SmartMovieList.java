@@ -42,6 +42,9 @@ public class SmartMovieList {
     private int mEndPosition = -1;
     private int mStartPage = -1;
     private int mEndPage = -1;
+    private int mItemsCount = 0;
+    private int mInsertIndex = -1;
+    private int mAppendIndex = -1;
 
 
     public SmartMovieList(Context context) {
@@ -202,6 +205,21 @@ public class SmartMovieList {
     private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
 
         int startIndex = 0;
+        /* first page handling */
+        if (mItemsCount == 0) {
+            mStartPage = mPageNumber;
+            mEndPage = mPageNumber;
+            mInsertIndex = 0;
+            mAppendIndex = RESULTS_PER_PAGE;
+            mItemsCount += RESULTS_PER_PAGE; //movies.size();
+
+            for (int i = 0; i < RESULTS_PER_PAGE; i++) {
+                Movie m = (i < movies.size()) ? movies.get(i) : null;
+                mMovies.set(i, m);
+            }
+            return;
+        }
+
         if (mPageNumber == mStartPage-1)
         {
             /* Overwrites the highest page num data */
@@ -210,6 +228,7 @@ public class SmartMovieList {
             mEndPage--;
             mEndPosition = (mEndPage+1)*RESULTS_PER_PAGE-1;
         }
+
         if (mPageNumber == mEndPage+1) {
             /* Overwrites the lowest page num data */
             /* Updates mEndPage and mEndPosition */
