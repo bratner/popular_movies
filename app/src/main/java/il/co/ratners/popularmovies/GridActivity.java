@@ -43,6 +43,7 @@ public class GridActivity extends AppCompatActivity {
                 new RecyclerView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        if (newState == RecyclerView.SCROLL_STATE_DRAGGING)
                         super.onScrollStateChanged(recyclerView, newState);
                         Log.d("BRAT", "Scroll state changed "+newState);
                     }

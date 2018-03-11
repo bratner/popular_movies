@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import il.co.ratners.popularmovies.data.Movie;
+import il.co.ratners.popularmovies.data.SmartMovieList;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 /**
@@ -44,6 +45,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     Context mContext;
     ArrayList<Movie> mMovies;
     GridLayoutManager.SpanSizeLookup mSpanLookup;
+    SmartMovieList mMovieList;
 
     /**
      * This method returns the entire result from the HTTP response.
@@ -74,8 +76,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     private boolean isLoadingIndicator(int position)
     {
-        if (position == mMovies.size())
-                return true;
+        if(mMovieList.getMovie(position) == null)
+            return true;
+//        if (position == mMovies.size())
+//                return true;
         return false;
     }
 
@@ -86,7 +90,17 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         protected ArrayList<Movie> doInBackground(Void... voids) {
             try {
                 ArrayList<Movie> lMovies;
-                URL url = new URL("https://api.themoviedb.org/3/discover/movie?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1");
+                //URL url = new URL("https://api.themoviedb.org/3/discover/movie?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1");
+                //URL url = new URL("https://api.themoviedb.org/3/movie/popular?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&page=1");
+                Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
+                        .appendPath("movie")
+                        .appendPath("popular")
+                        .appendQueryParameter("api_key", "1ba61ad61368b70c6437f62af9bd3345")
+                        .appendQueryParameter("language", "en-US")
+                        .appendQueryParameter("page", "1").build();
+
+                URL url = new URL(uri.toString());
+                Log.d(TAG, "URL is "+uri.toString());
                 String json_input = getResponseFromHttpUrl(url);
                 JSONObject response = new JSONObject(json_input);
                 JSONArray jsonMovies = response.getJSONArray("results");
@@ -115,6 +129,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
             super.onPostExecute(movies);
+            if (movies == null) {
+                Log.e(TAG, "Unable to retrieve remote data.");
+                return;
+            }
             mMovies = movies;
             MovieGridAdapter.this.notifyDataSetChanged();
         }
@@ -123,6 +141,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     public MovieGridAdapter(Context context) {
         mMovies = new ArrayList<>();
         mContext = context;
+        mMovieList = new SmartMovieList(mContext);
         mSpanLookup = new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -131,10 +150,17 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
                 return 1;
             }
         };
-        MovieGetterTask task = new MovieGetterTask();
-        task.execute();
+        mMovieList.setUpdateListener(new SmartMovieList.UpdateListener() {
 
-
+            @Override
+            public void OnUpdate(ArrayList<Integer> updated_positions) {
+                MovieGridAdapter.this.notifyDataSetChanged();
+            }
+        });
+        /* MovieGetterTask task = new MovieGetterTask();
+         task.execute(); */
+        /* TODO: Something like mMovieList.fillCache() might be in order */
+        mMovieList.getMovie(0);
     }
 
     @Override
@@ -168,9 +194,13 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         /* TODO: get a movie poster from cache or from the web */
         if (holder.getItemViewType() != 0)
             return;
-
-        holder.mGridItemTextView.setText(mMovies.get(position).getTitle());
-        String url = TheMovieDB.getMovieImageURL(mMovies.get(position).getPoster_path());
+        Movie m = mMovieList.getMovie(position);
+        if (m == null) {
+            Log.d(TAG, "No movie was found for position "+position);
+            return;
+        }
+        holder.mGridItemTextView.setText(m.getTitle());
+        String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
         Log.d(TAG, url);
         Picasso.with(mContext)
                 .load(url).into(holder.mMoviePosterImageView);
@@ -180,7 +210,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public int getItemCount() {
-        return mMovies.size()+1;
+        return mMovieList.getEndPosition()+1;
+       // return mMovies.size()+1;
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
