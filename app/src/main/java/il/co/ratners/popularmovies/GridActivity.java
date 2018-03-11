@@ -38,7 +38,7 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView.setLayoutManager(mGridLayoutManager);
         mGridRecyclerView.setAdapter(mGridAdapter);
 
-        /* TODO: The adapter should have a scroll listener to manage loads */
+        /* TODO: The adapter should have a scroll listener to manage loads. Does it? */
         mGridRecyclerView.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
                     @Override

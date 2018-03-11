@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -15,7 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 
@@ -31,31 +31,28 @@ public class SmartMovieList {
     private final int CACHE_PAGES = 5;
     private final int CACHE_SIZE = CACHE_PAGES*RESULTS_PER_PAGE;
 
-    private ArrayList<Movie> mMovies;
-    private ArrayList<Integer> mPositionToPage;
+    private Movie[] mMovies;
+
     private Context mContext;
     private UpdateListener mUpdateListener;
-    private ArrayList<Integer> mPageOrder;
 
+    /* External glue */
+    int mStartPosition = 0;
+    int mEndPosition = 0;
     /* Cache management */
-    private int mStartPosition = -1;
-    private int mEndPosition = -1;
-    private int mStartPage = -1;
-    private int mEndPage = -1;
-    private int mItemsCount = 0;
-    private int mInsertIndex = -1;
-    private int mAppendIndex = -1;
+    int mNumPagesInCache = 0;
+
+
+    private boolean initialLoading = false;
 
 
     public SmartMovieList(Context context) {
         mContext = context;
-        mMovies = new ArrayList<Movie>(CACHE_SIZE);
+        mMovies = new Movie[CACHE_SIZE];
 
-        mPositionToPage = new ArrayList<>(CACHE_SIZE);
-
-        /* No add should be used on mMovies from this point */
-        for (int i = 0; i < CACHE_SIZE ; i++) {
-            mMovies.add(null);
+        initialLoading = true;
+        for (int i = 0; i < CACHE_PAGES; i++) {
+            new PageGetterTask().execute(i);
         }
 
     }
@@ -86,7 +83,7 @@ public class SmartMovieList {
          */
 
         if (isPositionCached(position)) {
-            ret = mMovies.get(positionToIndex(position));
+            ret = mMovies[positionToIndex(position)];
         } else {
             loadPage(position % RESULTS_PER_PAGE);
             ret = null;
@@ -104,9 +101,7 @@ public class SmartMovieList {
         return false;
     }
 
-    private int getCacheSize() {
-        return CACHE_SIZE;
-    }
+
 
     private int positionToIndex(int position) {
         if (position < 0)
@@ -137,6 +132,7 @@ public class SmartMovieList {
                 Log.d(TAG, "URL is "+uri.toString());
                 String json_input = getResponseFromHttpUrl(url);
                 JSONObject response = new JSONObject(json_input);
+                mTotalMovies = response.getInt()
                 JSONArray jsonMovies = response.getJSONArray("results");
                 lMovies = new ArrayList<>();
                 for(int i = 0; i < jsonMovies.length(); ++i)
@@ -202,49 +198,18 @@ public class SmartMovieList {
         }
     }
 
-    private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
-
-        int startIndex = 0;
-        /* first page handling */
-        if (mItemsCount == 0) {
-            mStartPage = mPageNumber;
-            mEndPage = mPageNumber;
-            mInsertIndex = 0;
-            mAppendIndex = RESULTS_PER_PAGE;
-            mItemsCount += RESULTS_PER_PAGE; //movies.size();
-
-            for (int i = 0; i < RESULTS_PER_PAGE; i++) {
-                Movie m = (i < movies.size()) ? movies.get(i) : null;
-                mMovies.set(i, m);
+    synchronized private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
+        if (initialLoading) {
+            int i = mPageNumber*RESULTS_PER_PAGE;
+            for (Movie m : movies)
+                mMovies[i++] = m;
+            if(++mNumPagesInCache == CACHE_PAGES) {
+                mStartPosition = 0;
+                mEndPosition = CACHE_SIZE-1;
+                initialLoading = false;
             }
-            return;
+            Log.d(TAG, "Initial loading for page "+mPageNumber+" is finished.");
         }
-
-        if (mPageNumber == mStartPage-1)
-        {
-            /* Overwrites the highest page num data */
-            /* Updates mStartPage and mStartPosition */
-            startIndex = positionToIndex(mEndPage*RESULTS_PER_PAGE);
-            mEndPage--;
-            mEndPosition = (mEndPage+1)*RESULTS_PER_PAGE-1;
-        }
-
-        if (mPageNumber == mEndPage+1) {
-            /* Overwrites the lowest page num data */
-            /* Updates mEndPage and mEndPosition */
-            startIndex = positionToIndex(mStartPage*RESULTS_PER_PAGE);
-            mStartPage++;
-            mStartPosition = mStartPage*RESULTS_PER_PAGE;
-            if (mEndPage == -1)
-            {
-                mEndPage = mStartPage;
-            }
-
-        }
-        for (int i = 0; i < movies.size(); i++) {
-            mMovies.set(startIndex+i, movies.get(i));
-        }
-
     }
 
 
