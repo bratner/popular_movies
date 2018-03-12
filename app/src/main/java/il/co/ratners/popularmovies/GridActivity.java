@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies;
 
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,6 +87,17 @@ public class GridActivity extends AppCompatActivity {
         builder.setView(messageView);
         builder.create();
         builder.show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }
 

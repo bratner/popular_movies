@@ -41,102 +41,23 @@ import il.co.ratners.popularmovies.utils.TheMovieDB;
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
    // int mFakeDataItems = 100;
     public static final String TAG = MovieGridAdapter.class.getSimpleName();
-    int mListStartPosition = 0;
+
     Context mContext;
     ArrayList<Movie> mMovies;
     GridLayoutManager.SpanSizeLookup mSpanLookup;
     SmartMovieList mMovieList;
 
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response, null if no response
-     * @throws IOException Related to network and stream reading
-     */
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
 
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            String response = null;
-            if (hasInput) {
-                response = scanner.next();
-            }
-            scanner.close();
-            return response;
-        } finally {
-            urlConnection.disconnect();
-        }
-    }
 
     private boolean isLoadingIndicator(int position)
     {
-        if(mMovieList.getMovie(position) == null)
+        if(mMovieList.getMovie(position) == null) {
+            Log.d(TAG, "Loading Indicatator at position "+position);
             return true;
-//        if (position == mMovies.size())
-//                return true;
+        }
+
         return false;
     }
-
-    class MovieGetterTask extends AsyncTask<Void, Void, ArrayList<Movie>>
-    {
-        final String TAG = MovieGetterTask.class.getSimpleName();
-        @Override
-        protected ArrayList<Movie> doInBackground(Void... voids) {
-            try {
-                ArrayList<Movie> lMovies;
-                //URL url = new URL("https://api.themoviedb.org/3/discover/movie?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1");
-                //URL url = new URL("https://api.themoviedb.org/3/movie/popular?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&page=1");
-                Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
-                        .appendPath("movie")
-                        .appendPath("popular")
-                        .appendQueryParameter("api_key", "1ba61ad61368b70c6437f62af9bd3345")
-                        .appendQueryParameter("language", "en-US")
-                        .appendQueryParameter("page", "1").build();
-
-                URL url = new URL(uri.toString());
-                Log.d(TAG, "URL is "+uri.toString());
-                String json_input = getResponseFromHttpUrl(url);
-                JSONObject response = new JSONObject(json_input);
-                JSONArray jsonMovies = response.getJSONArray("results");
-                lMovies = new ArrayList<>();
-                for(int i = 0; i < jsonMovies.length(); ++i)
-                {
-                    Movie m = Movie.parseJsonToMovie(jsonMovies.getJSONObject(i));
-                    if (m != null) {
-                        lMovies.add(m);
-                        Log.d(TAG, "Adding "+m.getTitle());
-                    }
-                }
-
-                return lMovies;
-
-            } catch (MalformedURLException uex) {
-                Log.e(TAG, "Malformed URL: "+uex);
-            } catch (IOException ioex) {
-                Log.e(TAG, "Networking problem: "+ioex);
-            } catch (JSONException jex) {
-                Log.e(TAG, "Data error: "+jex);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            super.onPostExecute(movies);
-            if (movies == null) {
-                Log.e(TAG, "Unable to retrieve remote data.");
-                return;
-            }
-            mMovies = movies;
-            MovieGridAdapter.this.notifyDataSetChanged();
-        }
-    };
 
     public MovieGridAdapter(Context context) {
         mMovies = new ArrayList<>();
@@ -153,8 +74,9 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         mMovieList.setUpdateListener(new SmartMovieList.UpdateListener() {
 
             @Override
-            public void OnUpdate(ArrayList<Integer> updated_positions) {
-                MovieGridAdapter.this.notifyDataSetChanged();
+            public void OnUpdate(int startPos, int itemCount) {
+                Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
+                MovieGridAdapter.this.notifyItemRangeChanged(startPos, itemCount);
             }
         });
         /* MovieGetterTask task = new MovieGetterTask();
@@ -210,8 +132,9 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public int getItemCount() {
-        return mMovieList.getEndPosition()+1;
-       // return mMovies.size()+1;
+        int ret = mMovieList.size()+1;
+        Log.d(TAG, "getItemCount() - "+ret);
+        return ret;
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
@@ -226,5 +149,6 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
 
     }
+
 
 }

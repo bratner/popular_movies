@@ -27,92 +27,75 @@ public class SmartMovieList {
 
     public static String TAG = SmartMovieList.class.getSimpleName();
     /* Themoviedb returns 20 results per page. Assuming this as true for now */
-    private final int RESULTS_PER_PAGE = 20;
-    private final int CACHE_PAGES = 5;
-    private final int CACHE_SIZE = CACHE_PAGES*RESULTS_PER_PAGE;
+    private final int INITAL_CACHE_PAGES = 3;
 
-    private Movie[] mMovies;
+    private ArrayList<Movie> mMovies;
 
     private Context mContext;
     private UpdateListener mUpdateListener;
 
-    /* External glue */
-    int mStartPosition = 0;
-    int mEndPosition = 0;
-    /* Cache management */
-    int mNumPagesInCache = 0;
-
-
-    private boolean initialLoading = false;
-
+    int lastLoadedPage = -1;
+    int mTotalMovies = -1;
+    boolean loading = false;
+    int loadingAt = -1;
 
     public SmartMovieList(Context context) {
         mContext = context;
-        mMovies = new Movie[CACHE_SIZE];
-
-        initialLoading = true;
-        for (int i = 0; i < CACHE_PAGES; i++) {
-            new PageGetterTask().execute(i);
-        }
-
+        mMovies = new ArrayList<>();
     }
 
     public void setUpdateListener(UpdateListener listener) {
         mUpdateListener = listener;
     }
 
-    public int getEndPosition() {
-        return mEndPosition;
+    public int size() {
+        Log.d(TAG, "size() returning "+mMovies.size());
+        return mMovies.size();
     }
+
 
     /* Callback mechanism to update the recyclerview when loading is done */
     public abstract static class UpdateListener {
-        public abstract void OnUpdate (ArrayList<Integer> updated_positions);
+        public abstract void OnUpdate (int startIndex, int count);
     }
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
     /* TODO: think of a way to signal actual end of list if it is not infinite(ish) */
     public Movie getMovie(int position) {
-        Movie ret;
-        Log.d(TAG, "Requested position: "+position);
-
-        /* Wait! But what if we are updating the movie list right now!?
-         * No panic! Main datastructure modifications are done on the main thread.
-         * RecyclerView calls come on the same thread. So no collision should be possible.
-         * Something about Handlers i think. Will investigate later.
-         */
-
-        if (isPositionCached(position)) {
-            ret = mMovies[positionToIndex(position)];
+        Log.d(TAG, "getMovie() position: "+position);
+        if (!loading) {
+            if (position >= mMovies.size()) {
+                loadPage(lastLoadedPage + 1);
+                return null;
+            }
+            return mMovies.get(position);
         } else {
-            loadPage(position % RESULTS_PER_PAGE);
-            ret = null;
+            if (position < loadingAt )
+                return mMovies.get(position);
+            return null;
         }
-        return ret;
     }
 
-    private void loadPage(int page) {
+    synchronized  private void loadPage(int page) {
+        loading = true;
+        loadingAt = mMovies.size();
+        Log.d(TAG, "loadPage() page 0. Starting Loading process.");
         new PageGetterTask().execute(page);
     }
 
-    private boolean isPositionCached(int position) {
-        if (position >= mStartPosition && position <= mEndPosition)
-            return true;
-        return false;
-    }
 
+    private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
+            mMovies.addAll(movies);
+            lastLoadedPage = mPageNumber;
+            Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
 
-
-    private int positionToIndex(int position) {
-        if (position < 0)
-            return 0;
-        return (mStartPosition + position) % CACHE_SIZE;
     }
 
     class PageGetterTask extends AsyncTask<Integer, Void, ArrayList<Movie>>
     {
         final String TAG = PageGetterTask.class.getSimpleName();
         private int mPageNumber;
+        private int mTotalItems;
 
         @Override
         protected ArrayList<Movie> doInBackground(Integer... in) {
@@ -132,7 +115,7 @@ public class SmartMovieList {
                 Log.d(TAG, "URL is "+uri.toString());
                 String json_input = getResponseFromHttpUrl(url);
                 JSONObject response = new JSONObject(json_input);
-                mTotalMovies = response.getInt()
+                mTotalItems = response.optInt("total_results",0);
                 JSONArray jsonMovies = response.getJSONArray("results");
                 lMovies = new ArrayList<>();
                 for(int i = 0; i < jsonMovies.length(); ++i)
@@ -163,12 +146,10 @@ public class SmartMovieList {
                 Log.e(TAG, "Unable to retrieve remote data.");
                 return;
             }
+            Log.d(TAG, "onPostExecut() for page "+mPageNumber);
             addPageToCache(mPageNumber, movies);
-            ArrayList<Integer> positionsList = new ArrayList<>(movies.size());
-            for (int i = 0; i < movies.size(); i++) {
-                positionsList.add(mPageNumber*RESULTS_PER_PAGE+i);
-            }
-            SmartMovieList.this.mUpdateListener.OnUpdate(positionsList);
+            loading = false;
+            SmartMovieList.this.mUpdateListener.OnUpdate(loadingAt, movies.size());
         }
         /**
          * This method returns the entire result from the HTTP response.
@@ -197,20 +178,4 @@ public class SmartMovieList {
             }
         }
     }
-
-    synchronized private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
-        if (initialLoading) {
-            int i = mPageNumber*RESULTS_PER_PAGE;
-            for (Movie m : movies)
-                mMovies[i++] = m;
-            if(++mNumPagesInCache == CACHE_PAGES) {
-                mStartPosition = 0;
-                mEndPosition = CACHE_SIZE-1;
-                initialLoading = false;
-            }
-            Log.d(TAG, "Initial loading for page "+mPageNumber+" is finished.");
-        }
-    }
-
-
 }
