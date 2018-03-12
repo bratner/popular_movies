@@ -39,15 +39,12 @@ import il.co.ratners.popularmovies.utils.TheMovieDB;
  */
 
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
-   // int mFakeDataItems = 100;
-    public static final String TAG = MovieGridAdapter.class.getSimpleName();
 
+    public static final String TAG = MovieGridAdapter.class.getSimpleName();
     Context mContext;
     ArrayList<Movie> mMovies;
     GridLayoutManager.SpanSizeLookup mSpanLookup;
     SmartMovieList mMovieList;
-
-
 
     private boolean isLoadingIndicator(int position)
     {
@@ -63,6 +60,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         mMovies = new ArrayList<>();
         mContext = context;
         mMovieList = new SmartMovieList(mContext);
+
+        /* Make progress indicator span the whole width of the screen and not just one cell */
         mSpanLookup = new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -71,17 +70,16 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
                 return 1;
             }
         };
-        mMovieList.setUpdateListener(new SmartMovieList.UpdateListener() {
 
+        mMovieList.setUpdateListener(new SmartMovieList.UpdateListener() {
             @Override
             public void OnUpdate(int startPos, int itemCount) {
                 Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
-                MovieGridAdapter.this.notifyItemRangeChanged(startPos, itemCount);
+                MovieGridAdapter.this.notifyItemRangeInserted(startPos, itemCount);
             }
         });
-        /* MovieGetterTask task = new MovieGetterTask();
-         task.execute(); */
-        /* TODO: Something like mMovieList.fillCache() might be in order */
+
+        /* Start the download */
         mMovieList.getMovie(0);
     }
 
@@ -94,7 +92,6 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View v;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         switch (viewType) {
@@ -104,8 +101,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             case 1:
                 v = inflater.inflate(R.layout.movie_progress_item_layout, parent, false);
                 break;
-                /* TODO: think of error handling */
             default:
+                Log.d(TAG, "onCreateViewHolder() - Inavlid viewType "+viewType);
                 return null;
         }
         return new MovieViewHolder(v);
@@ -113,7 +110,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        /* TODO: get a movie poster from cache or from the web */
+        /* Nothing to set if the are not showing a movie */
         if (holder.getItemViewType() != 0)
             return;
         Movie m = mMovieList.getMovie(position);
@@ -125,10 +122,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
         Log.d(TAG, url);
         Picasso.with(mContext)
-                .load(url).into(holder.mMoviePosterImageView);
+                .load(url)
+                .placeholder(R.drawable.poster_placeholder)
+                .into(holder.mMoviePosterImageView);
     }
-
-
 
     @Override
     public int getItemCount() {

@@ -13,6 +13,7 @@
     android:layout_marginTop="4dp"
     app:cardUseCompatPadding="false"
     android:id="@+id/cv_movie_card"
+    android:clickable="true"
     >
     <android.support.constraint.ConstraintLayout
 
@@ -20,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         >
+
     <ImageView
 
         android:id="@+id/iv_movie_poster"
@@ -55,5 +57,11 @@
         android:textSize="15sp"
         android:textColor="#90e8ff"
         />
+
     </android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/movie_touch_selector"
+        />
 </android.support.v7.widget.CardView>

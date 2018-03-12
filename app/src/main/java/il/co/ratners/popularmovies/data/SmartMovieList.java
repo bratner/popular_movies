@@ -1,9 +1,11 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -62,7 +64,7 @@ public class SmartMovieList {
     /* Returns a movie object for recyclerview to display or null to attempt a load */
     /* TODO: think of a way to signal actual end of list if it is not infinite(ish) */
     public Movie getMovie(int position) {
-        Log.d(TAG, "getMovie() position: "+position);
+     /*   Log.d(TAG, "getMovie() position: "+position);*/
         if (!loading) {
             if (position >= mMovies.size()) {
                 loadPage(lastLoadedPage + 1);
@@ -76,7 +78,7 @@ public class SmartMovieList {
         }
     }
 
-    synchronized  private void loadPage(int page) {
+    synchronized private void loadPage(int page) {
         loading = true;
         loadingAt = mMovies.size();
         Log.d(TAG, "loadPage() page 0. Starting Loading process.");
@@ -102,11 +104,11 @@ public class SmartMovieList {
             mPageNumber = in[0];
             try {
                 ArrayList<Movie> lMovies;
-                //URL url = new URL("https://api.themoviedb.org/3/discover/movie?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1");
-                //URL url = new URL("https://api.themoviedb.org/3/movie/popular?api_key=1ba61ad61368b70c6437f62af9bd3345&language=en-US&page=1");
+
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
                         .appendPath("movie")
-                        .appendPath("popular")
+                        .appendPath(sp.getString("sort_by","popular"))
                         .appendQueryParameter("api_key", "1ba61ad61368b70c6437f62af9bd3345")
                         .appendQueryParameter("language", "en-US")
                         .appendQueryParameter("page", ""+mPageNumber+1).build();
