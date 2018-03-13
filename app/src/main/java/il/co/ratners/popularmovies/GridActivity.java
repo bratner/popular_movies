@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import il.co.ratners.popularmovies.utils.PrefUtils;
+
 public class GridActivity extends AppCompatActivity {
     RecyclerView mGridRecyclerView;
     GridLayoutManager mGridLayoutManager;
@@ -63,9 +65,18 @@ public class GridActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean ret = false;
-        if (item.getItemId() == R.id.menu_about)
-        {
-            ShowAboutDialog();
+        switch (item.getItemId()) {
+            case R.id.menu_about:
+                ShowAboutDialog();
+                break;
+            case R.id.menu_sort_popularity:
+                PrefUtils.setSortOrder(this, PrefUtils.SORT_BY_POPULARITY);
+                mGridAdapter.fullReset();
+                break;
+            case R.id.menu_sort_rating:
+                PrefUtils.setSortOrder(this, PrefUtils.SORT_BY_RATING);
+                mGridAdapter.fullReset();
+                break;
         }
         return ret;
     }
@@ -88,16 +99,5 @@ public class GridActivity extends AppCompatActivity {
         builder.create();
         builder.show();
     }
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-//        super.onSaveInstanceState(outState, outPersistentState);
-//
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//    }
 }
 

@@ -2,7 +2,6 @@ package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -13,14 +12,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Vector;
 
+import il.co.ratners.popularmovies.utils.PrefUtils;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 
@@ -39,6 +36,7 @@ public class SmartMovieList {
 
     private Context mContext;
     private UpdateListener mUpdateListener;
+    private AsyncTask<Integer, Void, ArrayList<Movie>> mPageGetter;
 
     int lastLoadedPage = -1;
     int mTotalMovies = -1;
@@ -57,6 +55,19 @@ public class SmartMovieList {
     public int size() {
         //Log.d(TAG, "size() returning "+mMovies.size());
         return mMovies.size();
+    }
+
+    public void reset() {
+        lastLoadedPage = -1;
+        mTotalMovies = -1;
+        loadingAt = -1;
+        if(loading)
+        {
+            mPageGetter.cancel(true);
+            loading = false;
+        }
+        mMovies.clear();
+        mMovies.ensureCapacity(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
     }
 
     /* Callback mechanism to update the recyclerview when loading is done */
@@ -87,7 +98,7 @@ public class SmartMovieList {
         loading = true;
         loadingAt = mMovies.size();
         Log.d(TAG, "loadPage() " + page);
-        new PageGetterTask().execute(page);
+        mPageGetter = new PageGetterTask().execute(page);
     }
 
 
@@ -113,8 +124,8 @@ public class SmartMovieList {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
                         .appendPath("movie")
-                        .appendPath(sp.getString("sort_by","popular"))
-                        .appendQueryParameter("api_key", "1ba61ad61368b70c6437f62af9bd3345")
+                        .appendPath(PrefUtils.getSortOrder(mContext))
+                        .appendQueryParameter("api_key", TheMovieDB.API_KEY)
                         .appendQueryParameter("language", "en-US")
                         .appendQueryParameter("page", ""+(mPageNumber+1)).build();
 
@@ -127,6 +138,8 @@ public class SmartMovieList {
                 lMovies = new ArrayList<>();
                 for(int i = 0; i < jsonMovies.length(); ++i)
                 {
+                    if(isCancelled())
+                        return null;
                     Movie m = Movie.parseJsonToMovie(jsonMovies.getJSONObject(i));
                     if (m != null) {
                         lMovies.add(m);

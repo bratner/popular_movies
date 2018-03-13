@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import il.co.ratners.popularmovies.BuildConfig;
+
 /**
  * Created by bratner on 3/4/18.
  */
@@ -17,8 +19,10 @@ public class TheMovieDB {
     /* TODO: consider getting and parsing TMDB configuration */
     public static final String IMAGES_URL = "https://image.tmdb.org/t/p/";
     public static final String DEFAULT_IMAGE_SIZE = "w342";
+    public static final String API_KEY = BuildConfig.API_KEY;
 
     public static String sImageSize = DEFAULT_IMAGE_SIZE;
+
 
     public static String getMovieImageURL(String imagePath) {
 
@@ -27,6 +31,8 @@ public class TheMovieDB {
         return ret;
 
     }
+
+
 
     /**
      * This method returns the entire result from the HTTP response.

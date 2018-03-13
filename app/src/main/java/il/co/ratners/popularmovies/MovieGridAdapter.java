@@ -31,10 +31,11 @@ import il.co.ratners.popularmovies.utils.TheMovieDB;
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
 
     public static final String TAG = MovieGridAdapter.class.getSimpleName();
-    Context mContext;
-    ArrayList<Movie> mMovies;
+    private Context mContext;
+    private SmartMovieList mMovieList;
+
     GridLayoutManager.SpanSizeLookup mSpanLookup;
-    SmartMovieList mMovieList;
+
 
     private boolean isLoadingIndicator(int position)
     {
@@ -42,12 +43,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             Log.d(TAG, "Loading Indicatator at position "+position);
             return true;
         }
-
         return false;
     }
 
     public MovieGridAdapter(Context context) {
-        mMovies = new ArrayList<>();
         mContext = context;
         mMovieList = new SmartMovieList(mContext);
 
@@ -134,6 +133,11 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
         }
+    }
+
+    public void fullReset() {
+        mMovieList.reset();
+        notifyDataSetChanged();
     }
 
 }

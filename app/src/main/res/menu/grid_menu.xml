@@ -8,8 +8,10 @@
         app:showAsAction="always"
         android:icon="@drawable/sort_icon">
         <menu>
-            <item android:title="Sort by Popularity"/>
-            <item android:title="Sort by Rating"/>
+            <item android:id="@+id/menu_sort_popularity"
+                android:title="Sort by Popularity" />
+            <item android:id="@+id/menu_sort_rating"
+                android:title="Sort by Rating"/>
         </menu>
     </item>
     <item android:title="About"
