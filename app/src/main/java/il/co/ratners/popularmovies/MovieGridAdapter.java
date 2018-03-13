@@ -17,25 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.data.SmartMovieList;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 /**
- * Created by bratner on 2/24/18.
+ * MovieGridAdapter - serves as a glue between RecylcerView requests and SmartMovieList
+ * which manages web request and keeps the actual movie data.
  */
 
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
@@ -144,9 +134,6 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
         }
-
-
     }
-
 
 }

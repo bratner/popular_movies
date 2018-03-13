@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
 
+import il.co.ratners.popularmovies.utils.TheMovieDB;
+
 
 /**
  * Holds a cache of Movie objects to simulate infinite scrolling.
@@ -45,7 +47,7 @@ public class SmartMovieList {
 
     public SmartMovieList(Context context) {
         mContext = context;
-        mMovies = new Vector<Movie>(100, 20);
+        mMovies = new Vector<Movie>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -57,7 +59,6 @@ public class SmartMovieList {
         return mMovies.size();
     }
 
-
     /* Callback mechanism to update the recyclerview when loading is done */
     public abstract static class UpdateListener {
         public abstract void OnUpdate (int startIndex, int count);
@@ -65,7 +66,7 @@ public class SmartMovieList {
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
     /* TODO: think of a way to signal actual end of list if it is not infinite(ish) */
-    synchronized public Movie getMovie(int position) {
+    public Movie getMovie(int position) {
      /*   Log.d(TAG, "getMovie() position: "+position);*/
         if (!loading) {
             if (position >= mMovies.size()) {
@@ -80,12 +81,12 @@ public class SmartMovieList {
         }
     }
 
-    synchronized private void loadPage(int page) {
+    private void loadPage(int page) {
         if(loading)
             return;
         loading = true;
         loadingAt = mMovies.size();
-        Log.d(TAG, "loadPage() page 0. Starting Loading process.");
+        Log.d(TAG, "loadPage() " + page);
         new PageGetterTask().execute(page);
     }
 
@@ -119,7 +120,7 @@ public class SmartMovieList {
 
                 URL url = new URL(uri.toString());
                 Log.d(TAG, "URL is "+uri.toString());
-                String json_input = getResponseFromHttpUrl(url);
+                String json_input = TheMovieDB.getResponseFromHttpUrl(url);
                 JSONObject response = new JSONObject(json_input);
                 mTotalItems = response.optInt("total_results",0);
                 JSONArray jsonMovies = response.getJSONArray("results");
@@ -156,32 +157,6 @@ public class SmartMovieList {
             addPageToCache(mPageNumber, movies);
             loading = false;
             SmartMovieList.this.mUpdateListener.OnUpdate(loadingAt, movies.size());
-        }
-        /**
-         * This method returns the entire result from the HTTP response.
-         *
-         * @param url The URL to fetch the HTTP response from.
-         * @return The contents of the HTTP response, null if no response
-         * @throws IOException Related to network and stream reading
-         */
-        private String getResponseFromHttpUrl(URL url) throws IOException {
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            try {
-                InputStream in = urlConnection.getInputStream();
-
-                Scanner scanner = new Scanner(in);
-                scanner.useDelimiter("\\A");
-
-                boolean hasInput = scanner.hasNext();
-                String response = null;
-                if (hasInput) {
-                    response = scanner.next();
-                }
-                scanner.close();
-                return response;
-            } finally {
-                urlConnection.disconnect();
-            }
         }
     }
 }
