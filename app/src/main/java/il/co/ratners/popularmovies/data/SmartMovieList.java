@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Vector;
 
 
 /**
@@ -30,8 +31,9 @@ public class SmartMovieList {
     public static String TAG = SmartMovieList.class.getSimpleName();
     /* Themoviedb returns 20 results per page. Assuming this as true for now */
     private final int INITAL_CACHE_PAGES = 3;
+    private final int ITEMS_PER_PAGE = 20;
 
-    private ArrayList<Movie> mMovies;
+    private Vector<Movie> mMovies;
 
     private Context mContext;
     private UpdateListener mUpdateListener;
@@ -43,7 +45,7 @@ public class SmartMovieList {
 
     public SmartMovieList(Context context) {
         mContext = context;
-        mMovies = new ArrayList<>();
+        mMovies = new Vector<Movie>(100, 20);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -51,7 +53,7 @@ public class SmartMovieList {
     }
 
     public int size() {
-        Log.d(TAG, "size() returning "+mMovies.size());
+        //Log.d(TAG, "size() returning "+mMovies.size());
         return mMovies.size();
     }
 
@@ -63,7 +65,7 @@ public class SmartMovieList {
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
     /* TODO: think of a way to signal actual end of list if it is not infinite(ish) */
-    public Movie getMovie(int position) {
+    synchronized public Movie getMovie(int position) {
      /*   Log.d(TAG, "getMovie() position: "+position);*/
         if (!loading) {
             if (position >= mMovies.size()) {
@@ -79,6 +81,8 @@ public class SmartMovieList {
     }
 
     synchronized private void loadPage(int page) {
+        if(loading)
+            return;
         loading = true;
         loadingAt = mMovies.size();
         Log.d(TAG, "loadPage() page 0. Starting Loading process.");
@@ -87,7 +91,7 @@ public class SmartMovieList {
 
 
     private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
-            mMovies.addAll(movies);
+            mMovies.addAll(mPageNumber*20, movies);
             lastLoadedPage = mPageNumber;
             Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
 
@@ -111,7 +115,7 @@ public class SmartMovieList {
                         .appendPath(sp.getString("sort_by","popular"))
                         .appendQueryParameter("api_key", "1ba61ad61368b70c6437f62af9bd3345")
                         .appendQueryParameter("language", "en-US")
-                        .appendQueryParameter("page", ""+mPageNumber+1).build();
+                        .appendQueryParameter("page", ""+(mPageNumber+1)).build();
 
                 URL url = new URL(uri.toString());
                 Log.d(TAG, "URL is "+uri.toString());

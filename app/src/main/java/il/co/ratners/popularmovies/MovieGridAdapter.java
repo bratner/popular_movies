@@ -75,12 +75,12 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             @Override
             public void OnUpdate(int startPos, int itemCount) {
                 Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
-                MovieGridAdapter.this.notifyItemRangeInserted(startPos, itemCount);
+                MovieGridAdapter.this.notifyItemRangeChanged(startPos, itemCount);
             }
         });
 
         /* Start the download */
-        mMovieList.getMovie(0);
+       // mMovieList.getMovie(0);
     }
 
     @Override
@@ -111,6 +111,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         /* Nothing to set if the are not showing a movie */
+        Log.d(TAG, "Binding position "+position);
         if (holder.getItemViewType() != 0)
             return;
         Movie m = mMovieList.getMovie(position);
@@ -130,7 +131,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     @Override
     public int getItemCount() {
         int ret = mMovieList.size()+1;
-        Log.d(TAG, "getItemCount() - "+ret);
+        //Log.d(TAG, "getItemCount() - "+ret);
         return ret;
     }
 
