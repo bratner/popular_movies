@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -124,7 +125,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         return ret;
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder {
+    public class MovieViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
         TextView mGridItemTextView;
         ImageView mMoviePosterImageView;
 
@@ -132,6 +134,16 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             super(itemView);
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            Log.d(TAG, "Clicked on position "+position+" - "+mMovieList.getMovie(position).getTitle());
+            Intent i = new Intent(mContext, MovieDetailsActivity.class);
+            /*TODO:d fill intent with enough extras */
+            mContext.startActivity(i);
         }
     }
 

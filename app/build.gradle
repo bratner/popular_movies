@@ -20,7 +20,7 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.buildConfigField "String", "API_KEY", "\""+getApiKey()+"\""
+        variant.buildConfigField "String", "API_KEY", "\"" + getApiKey() + "\""
     }
 }
 
@@ -37,7 +37,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-def getApiKey(){
+
+def getApiKey() {
     def Properties props = new Properties()
     props.load(new FileInputStream(new File('project.properties')))
     print "Props: "
