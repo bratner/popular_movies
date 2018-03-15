@@ -4,4 +4,10 @@
     <string name="default_sort_order">popular</string>
     <string name="popular_sort_order">popular</string>
     <string name="rating_sort_order">top_rated</string>
+    <string name="key_title">title</string>
+    <string name="key_original_title">original_title</string>
+    <string name="key_overview">overview</string>
+    <string name="key_rating">rating</string>
+    <string name="key_date">release_date</string>
+    <string name="key_release_date">release_date</string>
 </resources>

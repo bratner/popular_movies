@@ -31,7 +31,8 @@ public class Movie {
     private static final String VOTE_COUNT_FIELD = "vote_count";
     private static final String RELEASE_DATE_FIELD = "release_date";
 
-    static final String DATE_FIELD_FORMAT = "yyyy-mm-dd";
+    static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
+    static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
 
     /* Instance variables */
     private int id;
@@ -40,9 +41,10 @@ public class Movie {
     private String poster_path;
     private String backdrop_path;
     private String overview;
-    private Double vote_average;
+    private String vote_average;
     private int vote_count;
-    private Long release_date;
+    private Date release_date;
+    private String rating;
 
     /**
      * Takes in a JSON object and returns a newly created Movie object or null on error.
@@ -61,14 +63,12 @@ public class Movie {
             m.poster_path = movie_json.getString(POSTER_PATH_FIELD);
             m.backdrop_path = movie_json.getString(BACKDROP_PATH_FIELD);
             m.overview = movie_json.getString(OVERVIEW_FIELD);
-            m.vote_average = movie_json.getDouble(VOTE_AVERAGE_FIELD);
+            m.vote_average = movie_json.getString(VOTE_AVERAGE_FIELD);
             m.vote_count = movie_json.getInt(VOTE_COUNT_FIELD);
 
             String release_date_string = movie_json.getString(RELEASE_DATE_FIELD);
-            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FIELD_FORMAT);
-            Date release_date = sdf.parse(release_date_string);
-
-            m.release_date = release_date.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat(INPUT_DATE_FIELD_FORMAT);
+            m.release_date = sdf.parse(release_date_string);
 
         } catch (JSONException jex) {
             Log.e(TAG, "Failed parsing JSON object. Exception: "+jex);
@@ -87,5 +87,22 @@ public class Movie {
 
     public String getPoster_path() {
         return poster_path;
+    }
+
+    public String getOriginalTitle() {
+        return original_title;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public String getRating() {
+        return vote_average;
+    }
+
+    public String getFormatedDate() {
+        SimpleDateFormat sd = new SimpleDateFormat(OUTPUT_DATE_FIELD_FORMAT);
+        return sd.format(release_date);
     }
 }

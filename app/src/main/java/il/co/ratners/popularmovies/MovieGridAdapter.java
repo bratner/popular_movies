@@ -2,14 +2,8 @@ package il.co.ratners.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,9 +134,15 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
+            Movie m = mMovieList.getMovie(position);
             Log.d(TAG, "Clicked on position "+position+" - "+mMovieList.getMovie(position).getTitle());
             Intent i = new Intent(mContext, MovieDetailsActivity.class);
-            /*TODO:d fill intent with enough extras */
+            /*TODO: fill intent with enough extras */
+            i.putExtra(mContext.getString(R.string.key_title),m.getTitle());
+            i.putExtra(mContext.getString(R.string.key_original_title),m.getOriginalTitle());
+            i.putExtra(mContext.getString(R.string.key_overview), m.getOverview());
+            i.putExtra(mContext.getString(R.string.key_rating), m.getRating());
+            i.putExtra(mContext.getString(R.string.key_release_date), m.getFormatedDate());
             mContext.startActivity(i);
         }
     }
