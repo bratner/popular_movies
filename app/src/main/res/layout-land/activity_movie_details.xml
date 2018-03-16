@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -11,7 +10,7 @@
         android:layout_marginRight="8dp"
         tools:context="il.co.ratners.popularmovies.MovieDetailsActivity"
         android:paddingTop="16dp"
-        android:nestedScrollingEnabled="true">
+        >
 
 
         <ImageView
@@ -19,7 +18,7 @@
             android:layout_width="220dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            tools:src="@drawable/deadpool_international_poster"
+            tools:src="@mipmap/deadpool_international_poster"
             android:layout_marginBottom="16dp"/>
 
 

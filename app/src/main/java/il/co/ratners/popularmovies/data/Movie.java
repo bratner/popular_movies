@@ -31,8 +31,8 @@ public class Movie {
     private static final String VOTE_COUNT_FIELD = "vote_count";
     private static final String RELEASE_DATE_FIELD = "release_date";
 
-    static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
-    static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
+    private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
+    private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
 
     /* Instance variables */
     private int id;

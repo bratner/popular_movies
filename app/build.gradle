@@ -41,7 +41,7 @@ dependencies {
 
 
 def getApiKey() {
-    def Properties props = new Properties()
+    Properties props = new Properties()
     props.load(new FileInputStream(new File('project.properties')))
     print "Props: "
     println props

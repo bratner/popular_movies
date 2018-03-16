@@ -13,4 +13,10 @@
     <string name="key_poster_url">poster_url</string>
     <string name="released_on_label">Released on</string>
     <string name="rating_label">Current rating is</string>
+    <string name="about_tmdb_declaration">This app uses http://www.themoviedb.org API</string>
+    <string name="about_written_by">Written by Boris Ratner ratner2@gmail.com</string>
+    <string name="menu_title_sort">Sort</string>
+    <string name="menu_title_popularity">Sort by Popularity</string>
+    <string name="menu_title_rating">Sort by Rating</string>
+    <string name="menu_title_about">About</string>
 </resources>

@@ -1,7 +1,6 @@
 package il.co.ratners.popularmovies;
 
-import android.content.Intent;
-import android.os.PersistableBundle;
+
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,15 +11,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+
 
 import il.co.ratners.popularmovies.utils.PrefUtils;
 
 public class GridActivity extends AppCompatActivity {
-    RecyclerView mGridRecyclerView;
-    GridLayoutManager mGridLayoutManager;
-    MovieGridAdapter mGridAdapter;
+    private RecyclerView mGridRecyclerView;
+    private GridLayoutManager mGridLayoutManager;
+    private MovieGridAdapter mGridAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +62,7 @@ public class GridActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean ret = false;
+        boolean ret = true;
         switch (item.getItemId()) {
             case R.id.menu_about:
                 ShowAboutDialog();
@@ -77,6 +75,8 @@ public class GridActivity extends AppCompatActivity {
                 PrefUtils.setSortOrder(this, PrefUtils.SORT_BY_RATING);
                 mGridAdapter.fullReset();
                 break;
+            default:
+                ret = false;
         }
         return ret;
     }

@@ -12,7 +12,7 @@ import il.co.ratners.popularmovies.R;
  */
 
 public class PrefUtils {
-    public static String TAG = PrefUtils.class.getSimpleName();
+    private static String TAG = PrefUtils.class.getSimpleName();
     public static final int SORT_BY_POPULARITY = 0;
     public static final int SORT_BY_RATING = 1;
 
@@ -44,6 +44,5 @@ public class PrefUtils {
                 sortOrderString = defaultSortOrder;
         }
         return sp.edit().putString(keyForSortOrder, sortOrderString).commit();
-
     }
 }

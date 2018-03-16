@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import java.util.ArrayList;
 
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.data.SmartMovieList;
@@ -25,7 +24,7 @@ import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
 
-    public static final String TAG = MovieGridAdapter.class.getSimpleName();
+    private static final String TAG = MovieGridAdapter.class.getSimpleName();
     private Context mContext;
     private SmartMovieList mMovieList;
 
@@ -114,9 +113,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     @Override
     public int getItemCount() {
-        int ret = mMovieList.size()+1;
-        //Log.d(TAG, "getItemCount() - "+ret);
-        return ret;
+        return mMovieList.size()+1;
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder

@@ -27,7 +27,7 @@ import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 public class SmartMovieList {
 
-    public static String TAG = SmartMovieList.class.getSimpleName();
+    private static String TAG = SmartMovieList.class.getSimpleName();
     /* Themoviedb returns 20 results per page. Assuming this as true for now */
     private final int INITAL_CACHE_PAGES = 3;
     private final int ITEMS_PER_PAGE = 20;
@@ -38,14 +38,13 @@ public class SmartMovieList {
     private UpdateListener mUpdateListener;
     private AsyncTask<Integer, Void, ArrayList<Movie>> mPageGetter;
 
-    int lastLoadedPage = -1;
-    int mTotalMovies = -1;
-    boolean loading = false;
-    int loadingAt = -1;
+    private int lastLoadedPage = -1;
+    private boolean loading = false;
+    private int loadingAt = -1;
 
     public SmartMovieList(Context context) {
         mContext = context;
-        mMovies = new Vector<Movie>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
+        mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -59,7 +58,6 @@ public class SmartMovieList {
 
     public void reset() {
         lastLoadedPage = -1;
-        mTotalMovies = -1;
         loadingAt = -1;
         if(loading)
         {
@@ -121,7 +119,6 @@ public class SmartMovieList {
             try {
                 ArrayList<Movie> lMovies;
 
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
                         .appendPath("movie")
                         .appendPath(PrefUtils.getSortOrder(mContext))

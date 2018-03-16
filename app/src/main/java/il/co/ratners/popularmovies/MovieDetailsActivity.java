@@ -1,6 +1,5 @@
 package il.co.ratners.popularmovies;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.ActionBar;
@@ -12,13 +11,15 @@ import com.squareup.picasso.Picasso;
 import il.co.ratners.popularmovies.databinding.ActivityMovieDetailsBinding;
 
 public class MovieDetailsActivity extends AppCompatActivity {
-    public static final String TAG = MovieDetailsActivity.class.getSimpleName();
-    private ActivityMovieDetailsBinding mBinding;
+    private static final String TAG = MovieDetailsActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_movie_details);
+        ActivityMovieDetailsBinding mBinding;
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         ActionBar actionBar = getSupportActionBar();
         Intent i = getIntent();
@@ -30,7 +31,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
         String title = i.getStringExtra(getString(R.string.key_title));
         String url = i.getStringExtra(getString(R.string.key_poster_url));
 
-        actionBar.setTitle(title);
+        if (title != null)
+            actionBar.setTitle(title);
 
         mBinding.detailsText.tvOriginalTitle.setText(originalTitle);
         mBinding.detailsText.tvOverview.setText(overview);
