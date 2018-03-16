@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        tools:context="il.co.ratners.popularmovies.MovieDetailsActivity"
+        android:paddingTop="16dp"
+        android:nestedScrollingEnabled="true">
+
+
+        <ImageView
+            android:id="@+id/iv_movie_poster"
+            android:layout_width="220dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/deadpool_international_poster"
+            android:layout_marginBottom="16dp"/>
+
+
+
+            <include
+                android:id="@+id/details_text"
+                layout="@layout/movie_detail_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"/>
+
+
+
+    </LinearLayout>
+</layout>

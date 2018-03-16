@@ -22,6 +22,8 @@ android {
     applicationVariants.all { variant ->
         variant.buildConfigField "String", "API_KEY", "\"" + getApiKey() + "\""
     }
+
+    dataBinding.enabled = true
 }
 
 

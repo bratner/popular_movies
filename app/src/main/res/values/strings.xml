@@ -10,4 +10,7 @@
     <string name="key_rating">rating</string>
     <string name="key_date">release_date</string>
     <string name="key_release_date">release_date</string>
+    <string name="key_poster_url">poster_url</string>
+    <string name="released_on_label">Released on</string>
+    <string name="rating_label">Current rating is</string>
 </resources>
