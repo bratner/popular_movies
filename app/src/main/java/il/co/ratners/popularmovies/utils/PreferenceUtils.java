@@ -11,33 +11,42 @@ import il.co.ratners.popularmovies.R;
  * Accessor functions for Shared Preferences go here.
  */
 
-public class PrefUtils {
-    private static String TAG = PrefUtils.class.getSimpleName();
+public class PreferenceUtils {
+    private static String TAG = PreferenceUtils.class.getSimpleName();
+
+
     public static final int SORT_BY_POPULARITY = 0;
     public static final int SORT_BY_RATING = 1;
 
-    /* retrieve the sort order string needed to complete the API request URL */
+    public enum SORT_ORDER {
+        POPULARITY, RATING
+    }
+
+    private static final String SORT_ORDER_KEY = "sort_order";
+
+
+
+    /* retrieve the sort order stri ng needed to complete the API request URL */
     public static String getSortOrder(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String keyForSortOrder = context.getString(R.string.key_sort_by);
-        String defaultSortOrder = context.getString(R.string.default_sort_order);
+        String keyForSortOrder = PreferenceUtils.SORT_ORDER_KEY;
+        String defaultSortOrder = TheMovieDB.DEFAULT_SORT_ORDER;
         sp.getString(keyForSortOrder, defaultSortOrder);
         return sp.getString(keyForSortOrder, defaultSortOrder);
 
-
     }
 
-    public static boolean setSortOrder(Context context, int sortOrder) {
+    public static boolean setSortOrder(Context context, SORT_ORDER sortOrder) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String keyForSortOrder = context.getString(R.string.key_sort_by);
-        String defaultSortOrder = context.getString(R.string.default_sort_order);
+        String keyForSortOrder = PreferenceUtils.SORT_ORDER_KEY;
+        String defaultSortOrder = TheMovieDB.DEFAULT_SORT_ORDER;
         String sortOrderString;
         switch (sortOrder) {
-            case SORT_BY_POPULARITY:
-                sortOrderString = context.getString(R.string.popular_sort_order);
+            case POPULARITY:
+                sortOrderString = TheMovieDB.SORT_BY_POPULARITY;
                 break;
-            case SORT_BY_RATING:
-                sortOrderString = context.getString(R.string.rating_sort_order);
+            case RATING:
+                sortOrderString = TheMovieDB.SORT_BY_RATING;
                 break;
             default:
                 Log.e(TAG, "Defaulting Sort Order");

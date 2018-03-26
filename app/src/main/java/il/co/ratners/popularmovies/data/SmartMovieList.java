@@ -1,10 +1,8 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,7 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import il.co.ratners.popularmovies.utils.PrefUtils;
+import il.co.ratners.popularmovies.utils.PreferenceUtils;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
 
 
@@ -121,7 +119,7 @@ public class SmartMovieList {
 
                 Uri uri = Uri.parse("https://api.themoviedb.org/3").buildUpon()
                         .appendPath("movie")
-                        .appendPath(PrefUtils.getSortOrder(mContext))
+                        .appendPath(PreferenceUtils.getSortOrder(mContext))
                         .appendQueryParameter("api_key", TheMovieDB.API_KEY)
                         .appendQueryParameter("language", "en-US")
                         .appendQueryParameter("page", ""+(mPageNumber+1)).build();

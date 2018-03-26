@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-import il.co.ratners.popularmovies.utils.PrefUtils;
+import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
 public class GridActivity extends AppCompatActivity {
     private RecyclerView mGridRecyclerView;
@@ -26,7 +26,7 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView = findViewById(R.id.movie_grid_rv);
 
         /* TODO: consider calculating the number of columns based on width in DP and DPI.
-         * Might be better then using a reasonable default.
+         * Might be better then using a reasonable default for various orientations.
          */
         int calculate_number_of_columns = getResources().getInteger(R.integer.movie_grid_number_of_columns);
         mGridLayoutManager = new GridLayoutManager(this, calculate_number_of_columns);
@@ -39,18 +39,6 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView.setLayoutManager(mGridLayoutManager);
         mGridRecyclerView.setAdapter(mGridAdapter);
 
-        /* TODO: The adapter should have a scroll listener to manage loads. Does it? */
-        mGridRecyclerView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                        if (newState == RecyclerView.SCROLL_STATE_DRAGGING)
-                        super.onScrollStateChanged(recyclerView, newState);
-                        Log.d("BRAT", "Scroll state changed "+newState);
-                    }
-
-                }
-        );
     }
 
     @Override
@@ -68,11 +56,11 @@ public class GridActivity extends AppCompatActivity {
                 ShowAboutDialog();
                 break;
             case R.id.menu_sort_popularity:
-                PrefUtils.setSortOrder(this, PrefUtils.SORT_BY_POPULARITY);
+                PreferenceUtils.setSortOrder(this, PreferenceUtils.SORT_ORDER.POPULARITY);
                 mGridAdapter.fullReset();
                 break;
             case R.id.menu_sort_rating:
-                PrefUtils.setSortOrder(this, PrefUtils.SORT_BY_RATING);
+                PreferenceUtils.setSortOrder(this, PreferenceUtils.SORT_ORDER.RATING);
                 mGridAdapter.fullReset();
                 break;
             default:

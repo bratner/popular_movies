@@ -135,13 +135,13 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             Log.d(TAG, "Clicked on position "+position+" - "+mMovieList.getMovie(position).getTitle());
             Intent i = new Intent(mContext, MovieDetailsActivity.class);
             String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
-            /*TODO: fill intent with enough extras */
-            i.putExtra(mContext.getString(R.string.key_title),m.getTitle());
-            i.putExtra(mContext.getString(R.string.key_original_title),m.getOriginalTitle());
-            i.putExtra(mContext.getString(R.string.key_overview), m.getOverview());
-            i.putExtra(mContext.getString(R.string.key_rating), m.getRating());
-            i.putExtra(mContext.getString(R.string.key_release_date), m.getFormatedDate());
-            i.putExtra(mContext.getString(R.string.key_poster_url), url);
+
+            i.putExtra(Movie.KEY_TITLE, m.getTitle());
+            i.putExtra(Movie.KEY_ORIGINAL_TITLE, m.getOriginalTitle());
+            i.putExtra(Movie.KEY_OVERVIEW, m.getOverview());
+            i.putExtra(Movie.KEY_RATING, m.getRating());
+            i.putExtra(Movie.KEY_RELEASE_DATE, m.getFormatedDate());
+            i.putExtra(Movie.KEY_POSTER_URL, url);
             mContext.startActivity(i);
         }
     }

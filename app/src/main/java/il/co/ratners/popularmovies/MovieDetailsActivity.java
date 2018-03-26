@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.squareup.picasso.Picasso;
 
+import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.databinding.ActivityMovieDetailsBinding;
 
 public class MovieDetailsActivity extends AppCompatActivity {
@@ -24,12 +25,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         Intent i = getIntent();
 
-        String originalTitle = i.getStringExtra(getString(R.string.key_original_title));
-        String overview = i.getStringExtra(getString(R.string.key_overview));
-        String releaseDate = i.getStringExtra(getString(R.string.key_date));
-        String rating = i.getStringExtra(getString(R.string.key_rating));
-        String title = i.getStringExtra(getString(R.string.key_title));
-        String url = i.getStringExtra(getString(R.string.key_poster_url));
+        String originalTitle = i.getStringExtra(Movie.KEY_ORIGINAL_TITLE);
+        String overview = i.getStringExtra(Movie.KEY_OVERVIEW);
+        String releaseDate = i.getStringExtra(Movie.KEY_RELEASE_DATE);
+        String rating = i.getStringExtra(Movie.KEY_RATING);
+        String title = i.getStringExtra(Movie.KEY_TITLE);
+        String url = i.getStringExtra(Movie.KEY_POSTER_URL);
 
         if (title != null)
             actionBar.setTitle(title);

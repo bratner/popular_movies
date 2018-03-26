@@ -1,20 +1,24 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="key_sort_by">sort_by</string>
-    <string name="default_sort_order">popular</string>
-    <string name="popular_sort_order">popular</string>
-    <string name="rating_sort_order">top_rated</string>
-    <string name="key_title">title</string>
-    <string name="key_original_title">original_title</string>
-    <string name="key_overview">overview</string>
-    <string name="key_rating">rating</string>
-    <string name="key_date">release_date</string>
-    <string name="key_release_date">release_date</string>
-    <string name="key_poster_url">poster_url</string>
+
+
+
+
+    <!--<string name="key_title">title</string>-->
+    <!--<string name="key_original_title">original_title</string>-->
+    <!--<string name="key_overview">overview</string>-->
+    <!--<string name="key_rating">rating</string>-->
+    <!--<string name="key_date">release_date</string>-->
+    <!--<string name="key_release_date">release_date</string>-->
+    <!--<string name="key_poster_url">poster_url</string>-->
+    <!--<string name="key_sort_by">sort_by</string>-->
+
     <string name="released_on_label">Released on</string>
     <string name="rating_label">Current rating is</string>
+
     <string name="about_tmdb_declaration">This app uses http://www.themoviedb.org API</string>
     <string name="about_written_by">Written by Boris Ratner ratner2@gmail.com</string>
+    <!--- menu items strings  -->
     <string name="menu_title_sort">Sort</string>
     <string name="menu_title_popularity">Sort by Popularity</string>
     <string name="menu_title_rating">Sort by Rating</string>

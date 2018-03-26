@@ -19,6 +19,10 @@ public class TheMovieDB {
     private static final String DEFAULT_IMAGE_SIZE = "w185";
     public static final String API_KEY = BuildConfig.API_KEY;
 
+    public static final String SORT_BY_POPULARITY = "popular";
+    public static final String SORT_BY_RATING = "top_rated";
+    public static final String DEFAULT_SORT_ORDER = SORT_BY_POPULARITY;
+
     private static String sImageSize = DEFAULT_IMAGE_SIZE;
 
 

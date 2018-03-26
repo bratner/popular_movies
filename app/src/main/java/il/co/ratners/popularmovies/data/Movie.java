@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by bratner on 3/4/18.
@@ -21,6 +22,7 @@ public class Movie {
     /* Class constants */
     
     private static final String TAG = Movie.class.getSimpleName();
+    /* JSON Parsing constants */
     private static final String ID_FIELD = "id";
     private static final String TITLE_FIELD = "title";
     private static final String ORIGINAL_TITLE_FIELD = "original_title";
@@ -30,6 +32,15 @@ public class Movie {
     private static final String VOTE_AVERAGE_FIELD = "vote_average";
     private static final String VOTE_COUNT_FIELD = "vote_count";
     private static final String RELEASE_DATE_FIELD = "release_date";
+
+    /* Key names for passing the data to details acitivity */
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_ORIGINAL_TITLE = "original_title";
+    public static final String KEY_OVERVIEW = "overview";
+    public static final String KEY_RATING = "rating";
+    public static final String KEY_RELEASE_DATE = "release_date";
+    public static final String KEY_POSTER_URL = "poster_url";
+
 
     private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
@@ -67,7 +78,7 @@ public class Movie {
             m.vote_count = movie_json.getInt(VOTE_COUNT_FIELD);
 
             String release_date_string = movie_json.getString(RELEASE_DATE_FIELD);
-            SimpleDateFormat sdf = new SimpleDateFormat(INPUT_DATE_FIELD_FORMAT);
+            SimpleDateFormat sdf = new SimpleDateFormat(INPUT_DATE_FIELD_FORMAT, Locale.ENGLISH);
             m.release_date = sdf.parse(release_date_string);
 
         } catch (JSONException jex) {
