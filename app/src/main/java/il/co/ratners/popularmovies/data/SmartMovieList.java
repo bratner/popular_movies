@@ -72,7 +72,8 @@ public class SmartMovieList {
     }
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
-    /* TODO: think of a way to signal actual end of list if it is not infinite(ish) */
+    /* DONE: think of a way to signal actual end of list if it is not infinite(ish)
+    *  Solution: actually very simple, size given == actual list size, no nulls */
     public Movie getMovie(int position) {
      /*   Log.d(TAG, "getMovie() position: "+position);*/
         if (!loading) {
@@ -88,6 +89,7 @@ public class SmartMovieList {
         }
     }
 
+    /* TODO: why do we assume this can't this be called in parallel with the same page num? */
     private void loadPage(int page) {
         if(loading)
             return;

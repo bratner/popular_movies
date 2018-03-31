@@ -111,6 +111,9 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
                 .into(holder.mMoviePosterImageView);
     }
 
+    /* Returns the size fo the internal list plus one. The last one is always the loading
+        progress bar item.
+     */
     @Override
     public int getItemCount() {
         return mMovieList.size()+1;
