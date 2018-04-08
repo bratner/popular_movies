@@ -1,5 +1,7 @@
 package il.co.ratners.popularmovies.utils;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -43,22 +45,19 @@ public class TheMovieDB {
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
+        InputStream in = urlConnection.getInputStream();
+        Scanner scanner = new Scanner(in);
 
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            String response = null;
-            if (hasInput) {
-                response = scanner.next();
-            }
-            scanner.close();
-            return response;
-        } finally {
-            urlConnection.disconnect();
+        scanner.useDelimiter("\\A");
+        boolean hasInput = scanner.hasNext();
+        String response = null;
+        if (hasInput) {
+            response = scanner.next();
         }
+        scanner.close();
+
+        urlConnection.disconnect();
+        return response;
     }
 
 }

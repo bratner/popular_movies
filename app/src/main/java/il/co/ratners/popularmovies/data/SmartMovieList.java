@@ -15,8 +15,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import il.co.ratners.popularmovies.network.MovieDBApi;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
+import retrofit2.Call;
+import retrofit2.Retrofit;
 
 
 /**
@@ -35,10 +38,11 @@ public class SmartMovieList {
     private Context mContext;
     private UpdateListener mUpdateListener;
     private AsyncTask<Integer, Void, ArrayList<Movie>> mPageGetter;
+    private Retrofit mRetrofit;
+
 
     private int lastLoadedPage = -1;
     private boolean loading = false;
-    private int loadingAt = -1;
 
     public SmartMovieList(Context context) {
         mContext = context;
@@ -56,7 +60,6 @@ public class SmartMovieList {
 
     public void reset() {
         lastLoadedPage = -1;
-        loadingAt = -1;
         if(loading)
         {
             mPageGetter.cancel(true);
@@ -76,17 +79,24 @@ public class SmartMovieList {
     *  Solution: actually very simple, size given == actual list size, no nulls */
     public Movie getMovie(int position) {
      /*   Log.d(TAG, "getMovie() position: "+position);*/
-        if (!loading) {
-            if (position >= mMovies.size()) {
-                loadPage(lastLoadedPage + 1);
-                return null;
-            }
+        /* is size atomic? */
+        if (position < mMovies.size())
             return mMovies.get(position);
-        } else {
-            if (position < loadingAt )
-                return mMovies.get(position);
-            return null;
-        }
+
+        loadPage(lastLoadedPage+1);
+        return null;
+//
+//        if (!loading) {
+//            if (position >= mMovies.size()) {
+//                loadPage(lastLoadedPage + 1);
+//                return null;
+//            }
+//            return mMovies.get(position);
+//        } else {
+//            if (position < loadingAt )
+//                return mMovies.get(position);
+//            return null;
+//        }
     }
 
     /* TODO: why do we assume this can't this be called in parallel with the same page num? */
@@ -94,14 +104,17 @@ public class SmartMovieList {
         if(loading)
             return;
         loading = true;
-        loadingAt = mMovies.size();
         Log.d(TAG, "loadPage() " + page);
+        //Call<MovieDBApi.MovieDBList> mPageCall
         mPageGetter = new PageGetterTask().execute(page);
     }
 
 
-    private void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
-            mMovies.addAll(mPageNumber*20, movies);
+    private synchronized void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
+            if (mPageNumber <= lastLoadedPage)
+                return;
+            /* addAll() is a syncronized method and size() is grown after copy is complete */
+            mMovies.addAll(mMovies.size(), movies);
             lastLoadedPage = mPageNumber;
             Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
 
@@ -111,7 +124,6 @@ public class SmartMovieList {
     {
         final String TAG = PageGetterTask.class.getSimpleName();
         private int mPageNumber;
-        private int mTotalItems;
 
         @Override
         protected ArrayList<Movie> doInBackground(Integer... in) {
@@ -130,10 +142,9 @@ public class SmartMovieList {
                 Log.d(TAG, "URL is "+uri.toString());
                 String json_input = TheMovieDB.getResponseFromHttpUrl(url);
                 JSONObject response = new JSONObject(json_input);
-                mTotalItems = response.optInt("total_results",0);
                 JSONArray jsonMovies = response.getJSONArray("results");
                 lMovies = new ArrayList<>();
-                for(int i = 0; i < jsonMovies.length(); ++i)
+                for (int i = 0; i < jsonMovies.length(); ++i)
                 {
                     if(isCancelled())
                         return null;
@@ -164,9 +175,10 @@ public class SmartMovieList {
                 return;
             }
             Log.d(TAG, "onPostExecut() for page "+mPageNumber);
+            int prevSize = mMovies.size();
             addPageToCache(mPageNumber, movies);
             loading = false;
-            SmartMovieList.this.mUpdateListener.OnUpdate(loadingAt, movies.size());
+            mUpdateListener.OnUpdate(prevSize, movies.size());
         }
     }
 }

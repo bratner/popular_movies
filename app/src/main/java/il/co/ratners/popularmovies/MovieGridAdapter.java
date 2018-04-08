@@ -58,7 +58,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             @Override
             public void OnUpdate(int startPos, int itemCount) {
                 Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
-                MovieGridAdapter.this.notifyItemRangeChanged(startPos, itemCount);
+                notifyItemRangeChanged(startPos, itemCount);
             }
         });
 
