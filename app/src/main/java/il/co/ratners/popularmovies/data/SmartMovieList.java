@@ -16,9 +16,12 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import il.co.ratners.popularmovies.network.MovieDBApi;
+import il.co.ratners.popularmovies.network.MovieDBConnector;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 
@@ -43,10 +46,12 @@ public class SmartMovieList {
 
     private int lastLoadedPage = -1;
     private boolean loading = false;
+    private final MovieDBConnector mMovieConnector;
 
     public SmartMovieList(Context context) {
         mContext = context;
         mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
+        mMovieConnector = new MovieDBConnector(context);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -101,12 +106,45 @@ public class SmartMovieList {
 
     /* TODO: why do we assume this can't this be called in parallel with the same page num? */
     private void loadPage(int page) {
+        Call<MovieDBApi.MovieDBList> call;
+
         if(loading)
             return;
         loading = true;
         Log.d(TAG, "loadPage() " + page);
-        //Call<MovieDBApi.MovieDBList> mPageCall
-        mPageGetter = new PageGetterTask().execute(page);
+
+        switch (PreferenceUtils.getSortOrder(mContext)) {
+            case TheMovieDB.SORT_BY_POPULARITY:
+                call = mMovieConnector.popular_movies(page, "en_US");
+                break;
+            case TheMovieDB.SORT_BY_RATING:
+                call = mMovieConnector.top_rated(page, "en_US");
+                break;
+            default:
+                call = null;
+        }
+
+        if(call == null)
+            return;
+
+        call.enqueue(new Callback<MovieDBApi.MovieDBList>() {
+            @Override
+            public void onResponse(Call<MovieDBApi.MovieDBList> call, Response<MovieDBApi.MovieDBList> response) {
+                MovieDBApi.MovieDBList movies = response.body();
+                for( MovieDBApi.MovieDBItem result : movies.getResults())
+                {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieDBApi.MovieDBList> call, Throwable t) {
+
+            }
+        });
+
+
+        //mPageGetter = new PageGetterTask().execute(page);
     }
 
 
