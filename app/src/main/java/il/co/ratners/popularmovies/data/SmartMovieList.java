@@ -115,10 +115,10 @@ public class SmartMovieList {
 
         switch (PreferenceUtils.getSortOrder(mContext)) {
             case TheMovieDB.SORT_BY_POPULARITY:
-                call = mMovieConnector.popular_movies(page, "en_US");
+                call = mMovieConnector.popular_movies(page+1, "en_US");
                 break;
             case TheMovieDB.SORT_BY_RATING:
-                call = mMovieConnector.top_rated(page, "en_US");
+                call = mMovieConnector.top_rated(page+1, "en_US");
                 break;
             default:
                 call = null;
@@ -130,11 +130,21 @@ public class SmartMovieList {
         call.enqueue(new Callback<MovieDBApi.MovieDBList>() {
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBList> call, Response<MovieDBApi.MovieDBList> response) {
-                MovieDBApi.MovieDBList movies = response.body();
-                for( MovieDBApi.MovieDBItem result : movies.getResults())
+                MovieDBApi.MovieDBList movieList = response.body();
+                ArrayList<Movie> appendList = new ArrayList<Movie>();
+                for( MovieDBApi.MovieDBItem result : movieList.getResults())
                 {
-
+                    appendList.add(Movie.movieDBItemToMovie(result));
                 }
+
+                if (appendList.size()>0)
+                {
+                    int prevSize = mMovies.size();
+                    addPageToCache(response.body().page-1, appendList);
+                    loading = false;
+                    mUpdateListener.OnUpdate(prevSize, appendList.size());
+                }
+                loading = false;
             }
 
             @Override
@@ -155,7 +165,6 @@ public class SmartMovieList {
             mMovies.addAll(mMovies.size(), movies);
             lastLoadedPage = mPageNumber;
             Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
-
     }
 
     class PageGetterTask extends AsyncTask<Integer, Void, ArrayList<Movie>>

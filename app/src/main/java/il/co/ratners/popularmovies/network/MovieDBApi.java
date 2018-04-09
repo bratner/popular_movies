@@ -1,31 +1,24 @@
 package il.co.ratners.popularmovies.network;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
-import il.co.ratners.popularmovies.BuildConfig;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
+
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import il.co.ratners.popularmovies.BuildConfig;
 import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
 
 public class MovieDBApi {
 
-    public static final String API_URL = "https://api.themoviedb.org/3.";
+    public static final String API_URL = "https://api.themoviedb.org/3/";
     public static final String API_KEY = BuildConfig.API_KEY;
 
     private static final String IMAGES_URL = "https://image.tmdb.org/t/p/";
@@ -45,7 +38,7 @@ public class MovieDBApi {
     }
 
     public static class MovieDBList {
-        Integer page;
+        public Integer page;
         Integer total_results;
         Integer total_pages;
         ArrayList<MovieDBItem> results;
@@ -53,23 +46,19 @@ public class MovieDBApi {
         public ArrayList<MovieDBItem> getResults() {
             return results;
         }
-
-
-
-
     }
 
     public static class MovieDBItem {
-        Integer id;
-        String title;
-        String original_title;
-        Double popularity;
-        Double vote_average;
-        Integer vote_count;
-        String poster_path;
-        String backdrop_path;
-        String overview;
-        Date release_date;
+        public Integer id;
+        public String title;
+        public String original_title;
+        public Double popularity;
+        public Double vote_average;
+        public Integer vote_count;
+        public String poster_path;
+        public String backdrop_path;
+        public String overview;
+        public Date release_date;
     }
 
     public static class MovieDBVideoList {
@@ -95,7 +84,7 @@ public class MovieDBApi {
                 @Query("language") String language
         );
 
-        @GET("movie/top_raterd")
+        @GET("movie/top_rated")
         Call<MovieDBList> top_rated(
                 @Query("page") Integer page,
                 @Query("language") String language
@@ -130,11 +119,5 @@ public class MovieDBApi {
             return chain.proceed(newRequest);
         }
     }
-
-    public MovieDBApi() {
-
-
-    }
-
 
 }

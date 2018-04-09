@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import il.co.ratners.popularmovies.network.MovieDBApi;
+
 /**
  * Created by bratner on 3/4/18.
  *
@@ -20,7 +22,7 @@ import java.util.Locale;
 public class Movie {
 
     /* Class constants */
-    
+
     private static final String TAG = Movie.class.getSimpleName();
     /* JSON Parsing constants */
     private static final String ID_FIELD = "id";
@@ -55,7 +57,24 @@ public class Movie {
     private String vote_average;
     private int vote_count;
     private Date release_date;
-    private String rating;
+
+
+    public static Movie movieDBItemToMovie(MovieDBApi.MovieDBItem movieDBitem)
+
+    {
+        Movie m = new Movie();
+
+        m.id = movieDBitem.id;
+        m.title = movieDBitem.title;
+        m.original_title = movieDBitem.original_title;
+        m.overview = movieDBitem.overview;
+        m.poster_path = movieDBitem.poster_path;
+        m.vote_average = String.format("%.2f", movieDBitem.vote_average);
+        m.release_date = movieDBitem.release_date;
+        m.vote_count = movieDBitem.vote_count;
+
+        return m;
+    }
 
     /**
      * Takes in a JSON object and returns a newly created Movie object or null on error.
