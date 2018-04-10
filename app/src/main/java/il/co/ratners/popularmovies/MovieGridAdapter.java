@@ -113,6 +113,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     /* Returns the size fo the internal list plus one. The last one is always the loading
         progress bar item.
+        TODO: Movie list can be final as well. So the adapter should ask mMovieList if it is final or infinite.
      */
     @Override
     public int getItemCount() {
