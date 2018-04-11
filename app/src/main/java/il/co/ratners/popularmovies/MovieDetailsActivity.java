@@ -1,11 +1,20 @@
 package il.co.ratners.popularmovies;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -92,9 +101,22 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void refreshReviewsUI() {
-//         ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
-//                R.layout.trailer_list_item, R.id.tv_video_description,mReviewList.getReviewList());
 
+        if (mReviewList.getReviewList().isEmpty())
+        {
+            mBinding.labelReviews.setVisibility(View.GONE);
+            mBinding.lvReviewsList.setVisibility(View.GONE);
+
+            return;
+        }
+
+         ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
+                R.layout.review_list_item, R.id.tv_review_content,mReviewList.getReviewList());
+
+        mBinding.lvReviewsList.setAdapter(adapter);
+
+        mBinding.labelReviews.setVisibility(View.VISIBLE);
+        mBinding.lvReviewsList.setVisibility(View.VISIBLE);
     }
 
     private Callback<MovieDBApi.MovieDBVideoList> videoListCallback() {
@@ -119,11 +141,48 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void refreshTrailerUI() {
+
+        if (mTrailers.getList().isEmpty())
+        {
+
+            mBinding.labelTrailers.setVisibility(View.GONE);
+            mBinding.lvTrailerList.setVisibility(View.GONE);
+
+            return;
+        }
         ArrayAdapter<MovieDBApi.MovieDBVideo> adapter = new ArrayAdapter<MovieDBApi.MovieDBVideo>(this,
                 R.layout.trailer_list_item, R.id.tv_video_description,mTrailers.getList());
 
         mBinding.lvTrailerList.setAdapter(adapter);
+
+        mBinding.lvTrailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MovieDBApi.MovieDBVideo video = mTrailers.getList().get(position);
+                watchYoutubeVideo(video.getVideoKey());
+            }
+        });
+
+
+        mBinding.labelTrailers.setVisibility(View.VISIBLE);
+        mBinding.lvTrailerList.setVisibility(View.VISIBLE);
+       // setListViewHeightBasedOnChildren(mBinding.lvTrailerList);
     }
 
+    /*
+        Start a youtube video
+        Based on an SO answer in:
+            https://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
+     */
+    private void watchYoutubeVideo(String id){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
+    }
 
 }

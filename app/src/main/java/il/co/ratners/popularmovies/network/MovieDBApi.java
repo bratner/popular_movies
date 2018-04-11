@@ -81,7 +81,16 @@ public class MovieDBApi {
         String type; //"Teaser", "Trailer", maybe more
 
         public String toString() {
-            return name + "-" + type;
+            return name;
+        }
+
+        public String getVideoLink() {
+            String link = "http://youtube.com/watch?v="+key;
+            return link;
+        }
+
+        public String getVideoKey() {
+            return key;
         }
     }
 

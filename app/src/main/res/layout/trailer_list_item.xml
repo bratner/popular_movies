@@ -3,13 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="4dp">
-<TextView
-    android:id="@+id/tv_video_description"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Description of a movie link"
-    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
-    android:layout_margin="4dp"
-    />
+    android:padding="4dp"
+    >
+
+    <TextView
+        android:id="@+id/tv_video_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="Description of a movie link with a long text to see if it will wrap around"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+        android:textSize="18sp"/>
+
 </LinearLayout>
