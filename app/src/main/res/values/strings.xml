@@ -1,18 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
-
-
-
-    <!--<string name="key_title">title</string>-->
-    <!--<string name="key_original_title">original_title</string>-->
-    <!--<string name="key_overview">overview</string>-->
-    <!--<string name="key_rating">rating</string>-->
-    <!--<string name="key_date">release_date</string>-->
-    <!--<string name="key_release_date">release_date</string>-->
-    <!--<string name="key_poster_url">poster_url</string>-->
-    <!--<string name="key_sort_by">sort_by</string>-->
-
     <string name="released_on_label">Released on</string>
     <string name="rating_label">Current rating is</string>
 
@@ -23,4 +11,11 @@
     <string name="menu_title_popularity">Sort by Popularity</string>
     <string name="menu_title_rating">Sort by Rating</string>
     <string name="menu_title_about">About</string>
+
+    <!--- details screen strings -->
+    <string name="trailers">Trailers (%1$d)</string>
+    <string name="mock_trailer_name">Description of a movie link with a long text to see if it will wrap around</string>
+    <string name="reviews">Reviews (%1$d)</string>
+    <string name="review_text">%1$s says \\\"%2$s\\\"</string>
+    <string name="mock_review_text">Jessica says \"This is a long review which must be a bit long to test wraping\"</string>
 </resources>

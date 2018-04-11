@@ -54,7 +54,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         String rating = i.getStringExtra(Movie.KEY_RATING);
         String title = i.getStringExtra(Movie.KEY_TITLE);
         String url = i.getStringExtra(Movie.KEY_POSTER_URL);
-        int id = i.getIntExtra(Movie.KEY_ID, -1);
+        int id = i.getIntExtra(Movie.KEY_ID, NO_ID);
 
         if (title != null)
             actionBar.setTitle(title);
@@ -104,8 +104,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         if (mReviewList.getReviewList().isEmpty())
         {
-            mBinding.labelReviews.setVisibility(View.GONE);
-            mBinding.lvReviewsList.setVisibility(View.GONE);
+            mBinding.trailersAndReviews.labelReviews.setVisibility(View.GONE);
+            mBinding.trailersAndReviews.lvReviewsList.setVisibility(View.GONE);
 
             return;
         }
@@ -113,10 +113,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
          ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
                 R.layout.review_list_item, R.id.tv_review_content,mReviewList.getReviewList());
 
-        mBinding.lvReviewsList.setAdapter(adapter);
+        mBinding.trailersAndReviews.lvReviewsList.setAdapter(adapter);
 
-        mBinding.labelReviews.setVisibility(View.VISIBLE);
-        mBinding.lvReviewsList.setVisibility(View.VISIBLE);
+        mBinding.trailersAndReviews.labelReviews.setText(getString(R.string.reviews, mReviewList.getReviewList().size()));
+        mBinding.trailersAndReviews.labelReviews.setVisibility(View.VISIBLE);
+        mBinding.trailersAndReviews.lvReviewsList.setVisibility(View.VISIBLE);
     }
 
     private Callback<MovieDBApi.MovieDBVideoList> videoListCallback() {
@@ -145,17 +146,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (mTrailers.getList().isEmpty())
         {
 
-            mBinding.labelTrailers.setVisibility(View.GONE);
-            mBinding.lvTrailerList.setVisibility(View.GONE);
+            mBinding.trailersAndReviews.labelTrailers.setVisibility(View.GONE);
+            mBinding.trailersAndReviews.lvTrailerList.setVisibility(View.GONE);
 
             return;
         }
         ArrayAdapter<MovieDBApi.MovieDBVideo> adapter = new ArrayAdapter<MovieDBApi.MovieDBVideo>(this,
                 R.layout.trailer_list_item, R.id.tv_video_description,mTrailers.getList());
 
-        mBinding.lvTrailerList.setAdapter(adapter);
+        mBinding.trailersAndReviews.lvTrailerList.setAdapter(adapter);
 
-        mBinding.lvTrailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mBinding.trailersAndReviews.lvTrailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MovieDBApi.MovieDBVideo video = mTrailers.getList().get(position);
@@ -163,17 +164,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         });
 
-
-        mBinding.labelTrailers.setVisibility(View.VISIBLE);
-        mBinding.lvTrailerList.setVisibility(View.VISIBLE);
+        mBinding.trailersAndReviews.labelTrailers.setText(getString(R.string.trailers, mTrailers.getList().size()));
+        mBinding.trailersAndReviews.labelTrailers.setVisibility(View.VISIBLE);
+        mBinding.trailersAndReviews.lvTrailerList.setVisibility(View.VISIBLE);
        // setListViewHeightBasedOnChildren(mBinding.lvTrailerList);
     }
 
     /*
-        Start a youtube video
+        Starts a youtube video
+
         Based on an SO answer in:
             https://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
-     */
+    */
     private void watchYoutubeVideo(String id){
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,

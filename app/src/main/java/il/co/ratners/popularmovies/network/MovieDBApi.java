@@ -110,7 +110,7 @@ public class MovieDBApi {
         String url;
 
         public String toString() {
-            return author +" : " + content;
+            return author +" says \"" + content + "\"";
         }
     }
     public interface MovieDBFunctions {
