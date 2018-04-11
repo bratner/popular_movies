@@ -5,11 +5,10 @@
     android:orientation="horizontal"
     android:padding="4dp">
 <TextView
-    android:id="@+id/tv_video_description"
+    android:id="@+id/tv_review_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Description of a movie link"
-    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+    android:text="This is a review text"
     android:layout_margin="4dp"
     />
 </LinearLayout>

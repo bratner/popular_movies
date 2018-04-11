@@ -21,6 +21,8 @@ import retrofit2.Response;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
+
+    private static final int NO_ID = -1;
     private MovieDBApi.MovieDBVideoList mTrailers;
     private MovieDBApi.MovieDBReviewList mReviewList;
     private ActivityMovieDetailsBinding mBinding;
@@ -58,8 +60,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         mMovieDB = new MovieDBConnector(this);
 
-        mMovieDB.getMovieVideos(id).enqueue(videoListCallback());
-        mMovieDB.getMovieReviews(id).enqueue(reviewListCallback());
+        /* Make sure we got a real ID before using it for web requests */
+        if (id != NO_ID) {
+            mMovieDB.getMovieVideos(id).enqueue(videoListCallback());
+            mMovieDB.getMovieReviews(id).enqueue(reviewListCallback());
+        }
        // String posterURL = i.getStringExtra(R.string.key_poster);
     }
 
@@ -69,6 +74,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
         return new Callback<MovieDBApi.MovieDBReviewList>() {
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBReviewList> call, Response<MovieDBApi.MovieDBReviewList> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(MovieDetailsActivity.this, "Failed fetching review list",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mReviewList = response.body();
                 refreshReviewsUI();
             }
@@ -82,16 +92,20 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void refreshReviewsUI() {
-        /* ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
-                R.layout.trailer_list_item, R.id.tv_video_description,mReviewList.getReviewList());
-        mBinding.
-        */
+//         ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
+//                R.layout.trailer_list_item, R.id.tv_video_description,mReviewList.getReviewList());
+
     }
 
     private Callback<MovieDBApi.MovieDBVideoList> videoListCallback() {
         return new Callback<MovieDBApi.MovieDBVideoList>() {
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBVideoList> call, Response<MovieDBApi.MovieDBVideoList> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(MovieDetailsActivity.this, "Failed fetching trailer list",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mTrailers = response.body();
                 refreshTrailerUI();
             }
@@ -107,6 +121,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void refreshTrailerUI() {
         ArrayAdapter<MovieDBApi.MovieDBVideo> adapter = new ArrayAdapter<MovieDBApi.MovieDBVideo>(this,
                 R.layout.trailer_list_item, R.id.tv_video_description,mTrailers.getList());
+
         mBinding.lvTrailerList.setAdapter(adapter);
     }
 

@@ -140,6 +140,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             Intent i = new Intent(mContext, MovieDetailsActivity.class);
             String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
 
+            i.putExtra(Movie.KEY_ID, m.getId());
             i.putExtra(Movie.KEY_TITLE, m.getTitle());
             i.putExtra(Movie.KEY_ORIGINAL_TITLE, m.getOriginalTitle());
             i.putExtra(Movie.KEY_OVERVIEW, m.getOverview());

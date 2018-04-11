@@ -75,7 +75,7 @@ public class MovieDBConnector implements MovieDBApi.MovieDBFunctions {
 
     @Override
     public Call<MovieDBApi.MovieDBReviewList> getMovieReviews(Integer id) {
-        return getMovieReviews(id);
+        return mApi.getMovieReviews(id);
     }
 
     /* Adds API key to every request sent using this connector */

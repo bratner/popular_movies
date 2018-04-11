@@ -142,4 +142,8 @@ public class Movie {
         SimpleDateFormat sd = new SimpleDateFormat(OUTPUT_DATE_FIELD_FORMAT);
         return sd.format(release_date);
     }
+
+    public int getId() {
+        return id;
+    }
 }
