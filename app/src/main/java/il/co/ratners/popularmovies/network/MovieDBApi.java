@@ -19,7 +19,7 @@ import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
 public class MovieDBApi {
 
     public static final String API_URL = "https://api.themoviedb.org/3/";
-    public static final String API_KEY = BuildConfig.API_KEY;
+
 
     private static final String IMAGES_URL = "https://image.tmdb.org/t/p/";
     private static final String DEFAULT_IMAGE_SIZE = "w185";
@@ -64,6 +64,10 @@ public class MovieDBApi {
     public static class MovieDBVideoList {
         Integer id;
         ArrayList<MovieDBVideo> results;
+
+        public ArrayList<MovieDBVideo> getList() {
+            return results;
+        }
     }
 
     public static class MovieDBVideo {
@@ -75,8 +79,31 @@ public class MovieDBApi {
         String site; //"YouTube"
         Integer size;
         String type; //"Teaser", "Trailer", maybe more
+
+        public String toString() {
+            return name + "-" + type;
+        }
     }
 
+    public static class MovieDBReviewList {
+        Integer id;
+        ArrayList<MovieDBReview> results;
+
+        public ArrayList<MovieDBReview> getReviewList() {
+            return results;
+        }
+    }
+
+    public static class MovieDBReview {
+        String id;
+        String author;
+        String content;
+        String url;
+
+        public String toString() {
+            return author +" : " + content;
+        }
+    }
     public interface MovieDBFunctions {
         @GET("movie/popular")
         Call<MovieDBList> popular_movies(
@@ -96,28 +123,18 @@ public class MovieDBApi {
         );
 
         @GET("movie/{id}/videos")
-        Call<MovieDBItem> getMovieVideos(
+        Call<MovieDBVideoList> getMovieVideos(
                 @Path("id") Integer id
         );
 
         @GET("movie/{id}/reviews")
-        Call<MovieDBItem> getMovieReviews(
+        Call<MovieDBReviewList> getMovieReviews(
                 @Path("id") Integer id
         );
 
     }
 
 
-    static class AddApiKeyInterceptor implements Interceptor {
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            HttpUrl originalUrl = originalRequest.url();
 
-            HttpUrl newRequestUrl = originalUrl.newBuilder().addQueryParameter("api_key", API_KEY).build();
-            Request newRequest = originalRequest.newBuilder().url(newRequestUrl).build();
-            return chain.proceed(newRequest);
-        }
-    }
 
 }

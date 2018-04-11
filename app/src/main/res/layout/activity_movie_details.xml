@@ -36,5 +36,18 @@
         app:layout_constraintTop_toBottomOf="@id/iv_movie_poster"/>
 
 </android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/ll_trailer_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ListView
+            android:id="@+id/lv_trailer_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/trailer_list_item">
+        </ListView>
+
+    </LinearLayout>
 </ScrollView>
 </layout>

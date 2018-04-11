@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -130,6 +131,12 @@ public class SmartMovieList {
         call.enqueue(new Callback<MovieDBApi.MovieDBList>() {
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBList> call, Response<MovieDBApi.MovieDBList> response) {
+
+                if(!response.isSuccessful()) {
+                    Log.e(TAG, "Failed fetching movie list");
+                    Toast.makeText(mContext,"Unable to fetch movie list" , Toast.LENGTH_LONG).show();
+                    return;
+                }
                 MovieDBApi.MovieDBList movieList = response.body();
                 ArrayList<Movie> appendList = new ArrayList<Movie>();
                 for( MovieDBApi.MovieDBItem result : movieList.getResults())
@@ -149,7 +156,7 @@ public class SmartMovieList {
 
             @Override
             public void onFailure(Call<MovieDBApi.MovieDBList> call, Throwable t) {
-
+                Log.d(TAG, "Failed fetching a page");
             }
         });
 

@@ -42,10 +42,12 @@ public class Movie {
     public static final String KEY_RATING = "rating";
     public static final String KEY_RELEASE_DATE = "release_date";
     public static final String KEY_POSTER_URL = "poster_url";
+    public static final String KEY_ID = "id";
 
 
     private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
+
 
     /* Instance variables */
     private int id;
@@ -58,6 +60,11 @@ public class Movie {
     private int vote_count;
     private Date release_date;
 
+    public Movie() {}
+    public Movie(int id, String title) {
+        this.id = id;
+        this.title = title;
+    }
 
     public static Movie movieDBItemToMovie(MovieDBApi.MovieDBItem movieDBitem)
 
