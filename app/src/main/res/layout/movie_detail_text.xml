@@ -16,11 +16,20 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         />
 
+    <Switch
+        android:id="@+id/sw_favorite"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:enabled="true"
+        android:text="Favorite"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_original_title" />
     <TextView
         android:id="@+id/label_release_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/tv_original_title"
+        app:layout_constraintTop_toBottomOf="@+id/sw_favorite"
         android:text="@string/released_on_label"
         android:layout_marginTop="8dp"
         />

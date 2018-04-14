@@ -16,13 +16,10 @@ public class FavoritesDBHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
 
-    /* TODO: Change this to whatever we actually need */
-    public FavoritesDBHelper(Context context,
-                             String name,
-                             SQLiteDatabase.CursorFactory factory,
-                             int version)
+
+    public FavoritesDBHelper(Context context)
     {
-        super(context, name, factory, version);
+        super(context, DatabaseName, null, DATABASE_VERSION);
     }
 
     @Override
@@ -43,4 +40,8 @@ public class FavoritesDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
+    }
 }

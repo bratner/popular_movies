@@ -3,8 +3,10 @@ package il.co.ratners.popularmovies;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,12 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import il.co.ratners.popularmovies.data.FavoritesProvider;
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.databinding.ActivityMovieDetailsBinding;
 import il.co.ratners.popularmovies.network.MovieDBApi;
@@ -27,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+public class MovieDetailsActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
@@ -66,6 +70,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
         Picasso.with(this).load(url)
                 .placeholder(R.drawable.poster_placeholder)
                 .into(mBinding.ivMoviePoster);
+
+        mBinding.detailsText.swFavorite.setOnCheckedChangeListener(this);
 
         mMovieDB = new MovieDBConnector(this);
 
@@ -167,7 +173,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mBinding.trailersAndReviews.labelTrailers.setText(getString(R.string.trailers, mTrailers.getList().size()));
         mBinding.trailersAndReviews.labelTrailers.setVisibility(View.VISIBLE);
         mBinding.trailersAndReviews.lvTrailerList.setVisibility(View.VISIBLE);
-       // setListViewHeightBasedOnChildren(mBinding.lvTrailerList);
+
     }
 
     /*
@@ -187,4 +193,41 @@ public class MovieDetailsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.d(TAG, isChecked ? "Adding to favorites":"Removing from favorites");
+        if (isChecked) {
+            addToFavorites();
+        } else {
+            removeFromFavorites();
+        }
+
+
+    }
+
+    private void removeFromFavorites() {
+
+    }
+
+    private void addToFavorites() {
+
+    }
+
+    class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
+
+        public FavoritesDBTask() {
+
+        }
+
+        @Override
+        protected Cursor doInBackground(Integer... integers) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+
+        }
+    }
 }

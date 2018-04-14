@@ -2,27 +2,45 @@ package il.co.ratners.popularmovies.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class FavoritesProvider extends ContentProvider {
-    /*
-        So here we create the dbhelper and use it to fullfill the queries
 
-        The request comes in the form of Uri, we use uri matcher to verify the request
-        and then act accordingly. These are part of the content provider why would the
-        matcher be created anywhere else?
-     */
+    public static final String TAG = FavoritesProvider.class.getSimpleName();
+    public static final int CODE_MOVIE = 100;
+
+    private final UriMatcher mUriMatcher = buildUriMatcher();
+    private final FavoritesDBHelper mDB = new FavoritesDBHelper(getContext());
+
+    private UriMatcher buildUriMatcher()
+    {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(FavoritesContract.CONTENT_AUTHORITY,
+                FavoritesContract.PATH_FAVORITES + "/#", CODE_MOVIE);
+        return matcher;
+    }
+
     @Override
     public boolean onCreate() {
-        return false;
+        return true;
     }
 
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        int matchResult = mUriMatcher.match(uri);
+
+        switch (matchResult) {
+            case CODE_MOVIE:
+                break;
+            default:
+                Log.e(TAG, "Unsupported URI: "+uri);
+        }
         return null;
     }
 
