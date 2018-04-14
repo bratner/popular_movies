@@ -11,7 +11,7 @@ public class FavoritesContract {
 
 
 
-    public static class FavoritesEntry implements BaseColumns {
+    public static final class FavoritesEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_FAVORITES)
                 .build();
