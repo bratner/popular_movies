@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -213,15 +214,27 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
 
     }
 
-    class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
+    static class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
+
+        int operation = 0;
+        int movieId = 0;
 
         public FavoritesDBTask() {
+            super();
 
         }
 
         @Override
         protected Cursor doInBackground(Integer... integers) {
-            return null;
+
+            operation = integers[0];
+
+            ContentResolver resolver =
+            if(operation == 1 || operation == 2)
+            {
+                movieId = integers[1];
+            }
+
         }
 
         @Override
