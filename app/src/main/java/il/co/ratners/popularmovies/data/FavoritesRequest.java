@@ -26,8 +26,14 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
     String mData;
     FavoritesResponseListener mCallback;
 
-
-    public FavoritesRequest(Context context, int action, int movieId, String data, FavoritesResponseListener callback) {
+    public FavoritesRequest(Context context, int action, int movieId, FavoritesResponseListener callback) {
+        super();
+        mContext = context;
+        mAction = action;
+        mMovieId = movieId;
+        mCallback = callback;
+    }
+    public FavoritesRequest(Context context, int action, int movieId, FavoritesResponseListener callback, String data) {
         super();
         mContext = context;
         mAction = action;
@@ -50,6 +56,7 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
                 break;
             case ADD_ACTION:
                 ContentValues vals = new ContentValues();
+                vals.put(FavoritesContract.FavoritesEntry.MOVIE_ID, ""+mMovieId);
                 vals.put(FavoritesContract.FavoritesEntry.MOVIE_JSON, mData);
                 Uri added = mContext.getContentResolver().insert(movieUri, vals);
                 ret = added;

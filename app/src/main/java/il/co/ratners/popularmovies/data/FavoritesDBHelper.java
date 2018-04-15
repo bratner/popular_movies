@@ -24,6 +24,8 @@ public class FavoritesDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d(TAG, "Creating the database");
+
         final String createQuery = "CREATE TABLE "+FavoritesEntry.TABLE_NAME+"("+
                 FavoritesEntry._ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 FavoritesEntry.MOVIE_ID+" INTEGER NOT NULL, "+

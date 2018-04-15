@@ -78,6 +78,7 @@ public class MovieDetailsActivity extends AppCompatActivity
         if (mMovieId != NO_ID) {
             mMovieDB.getMovieVideos(mMovieId).enqueue(videoListCallback());
             mMovieDB.getMovieReviews(mMovieId).enqueue(reviewListCallback());
+            queryFavorite();
         }
        // String posterURL = i.getStringExtra(R.string.key_poster);
     }
@@ -207,7 +208,7 @@ public class MovieDetailsActivity extends AppCompatActivity
     private void removeFromFavorites() {
 
             FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.DELETE_ACTION,
-                    mMovieId, null,this);
+                    mMovieId,this);
             request.execute();
     }
 
@@ -215,26 +216,32 @@ public class MovieDetailsActivity extends AppCompatActivity
 
     private void addToFavorites() {
         FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.ADD_ACTION,
-                mMovieId, "JSON-TEXT-OF-THE-MOVIE: "+mTitle,this);
+                mMovieId, this, "JSON-TEXT-OF-THE-MOVIE: "+mTitle);
         request.execute();
     }
-    private void startCheckingIfFavorite() {
 
+    private void queryFavorite() {
+        FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.FIND_ACTION,
+                mMovieId, this);
+        request.execute();
     }
 
     @Override
     public void onMovieRemoved(boolean really) {
         Log.d(TAG, "Movie removed from favorites. "+really);
+        onMovieFound(false);
     }
 
     @Override
     public void onMovieAdded(boolean really) {
         Log.d(TAG, "Movie added to favorites. "+really);
+        onMovieFound(true);
     }
 
     @Override
     public void onMovieFound(boolean found) {
         Log.d(TAG, "Movie "+(found ? " was found": " was NOT found"));
+        mBinding.detailsText.swFavorite.setChecked(found);
     }
 
 

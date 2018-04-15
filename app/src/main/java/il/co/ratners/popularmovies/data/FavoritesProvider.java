@@ -1,9 +1,11 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +17,7 @@ public class FavoritesProvider extends ContentProvider {
     public static final int CODE_MOVIE = 100;
 
     private final UriMatcher mUriMatcher = buildUriMatcher();
-    private final FavoritesDBHelper mDB = new FavoritesDBHelper(getContext());
+    private FavoritesDBHelper mDB;
 
     private UriMatcher buildUriMatcher()
     {
@@ -27,6 +29,8 @@ public class FavoritesProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+
+        mDB = new FavoritesDBHelper(getContext());
         return true;
     }
 
@@ -35,13 +39,17 @@ public class FavoritesProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         int matchResult = mUriMatcher.match(uri);
 
-        switch (matchResult) {
-            case CODE_MOVIE:
-                break;
-            default:
-                Log.e(TAG, "Unsupported URI: "+uri);
-        }
-        return null;
+        if (matchResult != CODE_MOVIE)
+            return null;
+
+        final SQLiteDatabase  db = mDB.getReadableDatabase();
+        Cursor ret = db.query(FavoritesContract.FavoritesEntry.TABLE_NAME,
+                null,
+                FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
+                new String[]{uri.getLastPathSegment()},
+                null, null, null);
+
+        return ret;
     }
 
     @Nullable
@@ -53,12 +61,35 @@ public class FavoritesProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+
+        int uriMatch = mUriMatcher.match(uri);
+        if (uriMatch != CODE_MOVIE)
+            return null;
+
+//        final String movieId = uri.getLastPathSegment();
+//        final String jsonData = values.getAsString(FavoritesContract.FavoritesEntry.MOVIE_JSON);
+        final SQLiteDatabase  db = mDB.getWritableDatabase();
+
+        long ret = db.insert(FavoritesContract.FavoritesEntry.TABLE_NAME, null, values);
+        if (ret == -1)
+            return null;
+
+        getContext().getContentResolver().notifyChange(uri, null);
+        return uri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int uriMatch = mUriMatcher.match(uri);
+        if (uriMatch != CODE_MOVIE)
+            return 0;
+
+        final SQLiteDatabase  db = mDB.getWritableDatabase();
+        int ret = db.delete(FavoritesContract.FavoritesEntry.TABLE_NAME,
+                FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
+                new String[]{uri.getLastPathSegment()});
+        getContext().getContentResolver().notifyChange(uri, null);
+        return ret;
     }
 
     @Override
