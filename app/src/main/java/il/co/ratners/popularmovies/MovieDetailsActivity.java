@@ -1,29 +1,22 @@
 package il.co.ratners.popularmovies;
 
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import il.co.ratners.popularmovies.data.FavoritesProvider;
+import il.co.ratners.popularmovies.data.FavoritesRequest;
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.databinding.ActivityMovieDetailsBinding;
 import il.co.ratners.popularmovies.network.MovieDBApi;
@@ -32,7 +25,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieDetailsActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+public class MovieDetailsActivity extends AppCompatActivity
+        implements CompoundButton.OnCheckedChangeListener,
+        FavoritesRequest.FavoritesResponseListener
+{
 
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
@@ -41,6 +37,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
     private MovieDBApi.MovieDBReviewList mReviewList;
     private ActivityMovieDetailsBinding mBinding;
     private MovieDBConnector mMovieDB;
+    private int mMovieId = NO_ID;
+    private String mTitle;
 
 
     @Override
@@ -57,12 +55,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
         String overview = i.getStringExtra(Movie.KEY_OVERVIEW);
         String releaseDate = i.getStringExtra(Movie.KEY_RELEASE_DATE);
         String rating = i.getStringExtra(Movie.KEY_RATING);
-        String title = i.getStringExtra(Movie.KEY_TITLE);
+        mTitle = i.getStringExtra(Movie.KEY_TITLE);
         String url = i.getStringExtra(Movie.KEY_POSTER_URL);
-        int id = i.getIntExtra(Movie.KEY_ID, NO_ID);
+        mMovieId = i.getIntExtra(Movie.KEY_ID, NO_ID);
 
-        if (title != null)
-            actionBar.setTitle(title);
+        if (mTitle != null)
+            actionBar.setTitle(mTitle);
 
         mBinding.detailsText.tvOriginalTitle.setText(originalTitle);
         mBinding.detailsText.tvOverview.setText(overview);
@@ -77,9 +75,9 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
         mMovieDB = new MovieDBConnector(this);
 
         /* Make sure we got a real ID before using it for web requests */
-        if (id != NO_ID) {
-            mMovieDB.getMovieVideos(id).enqueue(videoListCallback());
-            mMovieDB.getMovieReviews(id).enqueue(reviewListCallback());
+        if (mMovieId != NO_ID) {
+            mMovieDB.getMovieVideos(mMovieId).enqueue(videoListCallback());
+            mMovieDB.getMovieReviews(mMovieId).enqueue(reviewListCallback());
         }
        // String posterURL = i.getStringExtra(R.string.key_poster);
     }
@@ -208,40 +206,36 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
 
     private void removeFromFavorites() {
 
+            FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.DELETE_ACTION,
+                    mMovieId, null,this);
+            request.execute();
     }
+
+
 
     private void addToFavorites() {
+        FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.ADD_ACTION,
+                mMovieId, "JSON-TEXT-OF-THE-MOVIE: "+mTitle,this);
+        request.execute();
+    }
+    private void startCheckingIfFavorite() {
 
     }
 
-    class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
-
-        int operation = 0;
-        int movieId = 0;
-
-        public FavoritesDBTask() {
-            super();
-
-        }
-
-        @Override
-        protected Cursor doInBackground(Integer... integers) {
-
-            operation = integers[0];
-
-            ContentResolver resolver = MovieDetailsActivity.this.getContentResolver();
-
-            if(operation == 1 || operation == 2)
-            {
-                movieId = integers[1];
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Cursor cursor) {
-            super.onPostExecute(cursor);
-
-        }
+    @Override
+    public void onMovieRemoved(boolean really) {
+        Log.d(TAG, "Movie removed from favorites. "+really);
     }
+
+    @Override
+    public void onMovieAdded(boolean really) {
+        Log.d(TAG, "Movie added to favorites. "+really);
+    }
+
+    @Override
+    public void onMovieFound(boolean found) {
+        Log.d(TAG, "Movie "+(found ? " was found": " was NOT found"));
+    }
+
+
 }
