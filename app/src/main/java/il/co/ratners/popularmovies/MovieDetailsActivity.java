@@ -214,7 +214,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
 
     }
 
-    static class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
+    class FavoritesDBTask extends AsyncTask<Integer, Void, Cursor> {
 
         int operation = 0;
         int movieId = 0;
@@ -229,7 +229,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements CompoundB
 
             operation = integers[0];
 
-            ContentResolver resolver =
+            ContentResolver resolver = MovieDetailsActivity.this.getContentResolver();
+
             if(operation == 1 || operation == 2)
             {
                 movieId = integers[1];
