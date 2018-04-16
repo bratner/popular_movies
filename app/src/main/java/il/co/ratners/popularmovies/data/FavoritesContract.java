@@ -19,4 +19,5 @@ public class FavoritesContract {
         public static final String MOVIE_ID = "movie_id";
         public static final String MOVIE_JSON = "movie_json";
     }
+
 }

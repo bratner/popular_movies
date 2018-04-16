@@ -41,6 +41,7 @@ public class MovieDetailsActivity extends AppCompatActivity
     private String mTitle;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,7 @@ public class MovieDetailsActivity extends AppCompatActivity
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         ActionBar actionBar = getSupportActionBar();
         Intent i = getIntent();
+
 
         String originalTitle = i.getStringExtra(Movie.KEY_ORIGINAL_TITLE);
         String overview = i.getStringExtra(Movie.KEY_OVERVIEW);

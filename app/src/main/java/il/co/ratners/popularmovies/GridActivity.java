@@ -1,6 +1,10 @@
 package il.co.ratners.popularmovies;
 
 
+import android.database.Cursor;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,9 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import il.co.ratners.popularmovies.data.FavoritesContract;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
-public class GridActivity extends AppCompatActivity {
+public class GridActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
     private RecyclerView mGridRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MovieGridAdapter mGridAdapter;
@@ -86,6 +91,24 @@ public class GridActivity extends AppCompatActivity {
         builder.setView(messageView);
         builder.create();
         builder.show();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = new CursorLoader(this,
+                FavoritesContract.FavoritesEntry.CONTENT_URI,
+                null,null,null,null);
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }
 

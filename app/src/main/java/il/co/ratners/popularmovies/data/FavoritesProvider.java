@@ -15,6 +15,7 @@ public class FavoritesProvider extends ContentProvider {
 
     public static final String TAG = FavoritesProvider.class.getSimpleName();
     public static final int CODE_MOVIE = 100;
+    public static final int CODE_MOVIE_LIST = 101;
 
     private final UriMatcher mUriMatcher = buildUriMatcher();
     private FavoritesDBHelper mDB;
@@ -24,6 +25,8 @@ public class FavoritesProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI(FavoritesContract.CONTENT_AUTHORITY,
                 FavoritesContract.PATH_FAVORITES + "/#", CODE_MOVIE);
+        matcher.addURI(FavoritesContract.CONTENT_AUTHORITY,
+                FavoritesContract.PATH_FAVORITES, CODE_MOVIE_LIST);
         return matcher;
     }
 
@@ -37,18 +40,31 @@ public class FavoritesProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+
         int matchResult = mUriMatcher.match(uri);
-
-        if (matchResult != CODE_MOVIE)
-            return null;
-
         final SQLiteDatabase  db = mDB.getReadableDatabase();
-        Cursor ret = db.query(FavoritesContract.FavoritesEntry.TABLE_NAME,
-                null,
-                FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
-                new String[]{uri.getLastPathSegment()},
-                null, null, null);
+        Cursor ret = null;
 
+        switch (matchResult) {
+            case CODE_MOVIE:
+                ret = db.query(FavoritesContract.FavoritesEntry.TABLE_NAME,
+                        null,
+                        FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
+                        new String[]{uri.getLastPathSegment()},
+                        null, null, null);
+                break;
+            case CODE_MOVIE_LIST:
+                ret = db.query(FavoritesContract.FavoritesEntry.TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                        );
+                break;
+
+        }
         return ret;
     }
 

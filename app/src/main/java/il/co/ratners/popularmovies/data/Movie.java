@@ -2,6 +2,9 @@ package il.co.ratners.popularmovies.data;
 
 import android.util.Log;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,6 +62,7 @@ public class Movie {
     private String vote_average;
     private int vote_count;
     private Date release_date;
+    private boolean favorite;
 
     public Movie() {}
     public Movie(int id, String title) {
@@ -146,4 +150,8 @@ public class Movie {
     public int getId() {
         return id;
     }
+
+    public boolean isFavorite() {return favorite};
+
+
 }
