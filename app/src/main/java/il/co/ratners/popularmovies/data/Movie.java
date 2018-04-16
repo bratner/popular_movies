@@ -2,6 +2,7 @@ package il.co.ratners.popularmovies.data;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 
@@ -46,10 +47,12 @@ public class Movie {
     public static final String KEY_RELEASE_DATE = "release_date";
     public static final String KEY_POSTER_URL = "poster_url";
     public static final String KEY_ID = "id";
+    public static final String KEY_FAVORITE = "favorite";
 
 
     private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
+
 
 
     /* Instance variables */
@@ -151,7 +154,18 @@ public class Movie {
         return id;
     }
 
-    public boolean isFavorite() {return favorite};
+    public boolean isFavorite() {
+        return favorite;
+    }
 
+    public String toJson() {
+        Gson gson = new Gson();
+        String ret = gson.toJson(this);
 
+        return ret;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
 }

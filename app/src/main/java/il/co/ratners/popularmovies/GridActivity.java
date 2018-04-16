@@ -20,7 +20,7 @@ import android.view.View;
 import il.co.ratners.popularmovies.data.FavoritesContract;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
-public class GridActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class GridActivity extends AppCompatActivity {
     private RecyclerView mGridRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MovieGridAdapter mGridAdapter;
@@ -93,22 +93,7 @@ public class GridActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.show();
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader loader = new CursorLoader(this,
-                FavoritesContract.FavoritesEntry.CONTENT_URI,
-                null,null,null,null);
-        return loader;
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
 }
 

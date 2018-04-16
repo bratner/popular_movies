@@ -1,21 +1,20 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
-import android.net.Uri;
+import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
+import android.util.SparseArray;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import il.co.ratners.popularmovies.GridActivity;
 import il.co.ratners.popularmovies.network.MovieDBApi;
 import il.co.ratners.popularmovies.network.MovieDBConnector;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
@@ -30,7 +29,7 @@ import retrofit2.Retrofit;
  * Holds a cache of Movie objects to simulate infinite scrolling.
  */
 
-public class SmartMovieList {
+public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static String TAG = SmartMovieList.class.getSimpleName();
     /* Themoviedb returns 20 results per page. Assuming this as true for now */
@@ -48,12 +47,15 @@ public class SmartMovieList {
     private int lastLoadedPage = -1;
     private boolean loading = false;
     private final MovieDBConnector mMovieConnector;
+    private SparseArray<String> mFavoritesMap;
+
 
     public SmartMovieList(Context context) {
         mContext = context;
         mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
         mMovieConnector = new MovieDBConnector(context);
-
+        mFavoritesMap = new SparseArray<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
+        ((GridActivity)context).getSupportLoaderManager().initLoader(1, null, this);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -74,6 +76,41 @@ public class SmartMovieList {
         }
         mMovies.clear();
         mMovies.ensureCapacity(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = new CursorLoader(mContext, FavoritesContract.FavoritesEntry.CONTENT_URI,
+                null,null,null,null);
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        int movieIdIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_ID);
+        int movieJsonIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_JSON);
+        while(data.moveToNext())
+        {
+            int movieId = data.getInt(movieIdIndex);
+            String movieJson = data.getString(movieJsonIndex);
+            mFavoritesMap.append(movieId, movieJson);
+        }
+        setMovieFavorites();
+    }
+
+    private void setMovieFavorites() {
+        for (Movie m: mMovies)
+        {
+          if (mFavoritesMap.get(m.getId()) != null)
+              m.setFavorite(true);
+          else
+              m.setFavorite(false);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mFavoritesMap.clear();
     }
 
     /* Callback mechanism to update the recyclerview when loading is done */
@@ -155,6 +192,7 @@ public class SmartMovieList {
                 return;
             /* addAll() is a syncronized method and size() is grown after copy is complete */
             mMovies.addAll(mMovies.size(), movies);
+            setMovieFavorites();
             lastLoadedPage = mPageNumber;
             Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
     }

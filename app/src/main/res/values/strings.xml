@@ -19,4 +19,5 @@
     <string name="reviews">Reviews (%1$d)</string>
     <string name="review_text">%1$s says \\\"%2$s\\\"</string>
     <string name="mock_review_text">Jessica says \"This is a long review which must be a bit long to test wraping\"</string>
+    <string name="favorite">Favorite</string>
 </resources>

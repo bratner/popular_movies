@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Map;
+
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.data.SmartMovieList;
 import il.co.ratners.popularmovies.utils.TheMovieDB;
@@ -27,8 +29,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     private static final String TAG = MovieGridAdapter.class.getSimpleName();
     private Context mContext;
     private SmartMovieList mMovieList;
-
+    private Map<Integer, String> mFavorites;
     GridLayoutManager.SpanSizeLookup mSpanLookup;
+
+
 
 
     private boolean isLoadingIndicator(int position)
@@ -103,6 +107,12 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             return;
         }
         holder.mGridItemTextView.setText(m.getTitle());
+
+        if (m.isFavorite())
+            holder.mFavoriteImageView.setVisibility(View.VISIBLE);
+        else
+            holder.mFavoriteImageView.setVisibility(View.INVISIBLE);
+
         String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
         Log.d(TAG, url);
         Picasso.with(mContext)
@@ -124,11 +134,13 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             implements View.OnClickListener {
         TextView mGridItemTextView;
         ImageView mMoviePosterImageView;
+        ImageView mFavoriteImageView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             mGridItemTextView = itemView.findViewById(R.id.tv_movie_title);
             mMoviePosterImageView = itemView.findViewById(R.id.iv_movie_poster);
+            mFavoriteImageView = itemView.findViewById(R.id.iv_favorite);
             itemView.setOnClickListener(this);
         }
 
@@ -147,6 +159,8 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             i.putExtra(Movie.KEY_RATING, m.getRating());
             i.putExtra(Movie.KEY_RELEASE_DATE, m.getFormatedDate());
             i.putExtra(Movie.KEY_POSTER_URL, url);
+            i.putExtra(Movie.KEY_FAVORITE, m.isFavorite());
+            Log.d(TAG, "Movie to JSON "+m.toJson());
             mContext.startActivity(i);
         }
     }

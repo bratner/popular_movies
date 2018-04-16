@@ -82,8 +82,6 @@ public class FavoritesProvider extends ContentProvider {
         if (uriMatch != CODE_MOVIE)
             return null;
 
-//        final String movieId = uri.getLastPathSegment();
-//        final String jsonData = values.getAsString(FavoritesContract.FavoritesEntry.MOVIE_JSON);
         final SQLiteDatabase  db = mDB.getWritableDatabase();
 
         long ret = db.insert(FavoritesContract.FavoritesEntry.TABLE_NAME, null, values);
@@ -91,6 +89,7 @@ public class FavoritesProvider extends ContentProvider {
             return null;
 
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(FavoritesContract.FavoritesEntry.CONTENT_URI, null);
         return uri;
     }
 
@@ -105,6 +104,7 @@ public class FavoritesProvider extends ContentProvider {
                 FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
                 new String[]{uri.getLastPathSegment()});
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(FavoritesContract.FavoritesEntry.CONTENT_URI, null);
         return ret;
     }
 
