@@ -17,7 +17,7 @@ import java.util.Map;
 
 import il.co.ratners.popularmovies.data.Movie;
 import il.co.ratners.popularmovies.data.SmartMovieList;
-import il.co.ratners.popularmovies.utils.TheMovieDB;
+import il.co.ratners.popularmovies.network.MovieDBApi;
 
 /**
  * MovieGridAdapter - serves as a glue between RecylcerView requests and SmartMovieList
@@ -114,7 +114,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         else
             holder.mFavoriteImageView.setVisibility(View.INVISIBLE);
 
-        String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
+        String url = MovieDBApi.getMovieImageURL(m.getPoster_path());
         Log.d(TAG, url);
         Picasso.with(mContext)
                 .load(url)
@@ -129,6 +129,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     @Override
     public int getItemCount() {
         return mMovieList.size()+1;
+    }
+
+    public void handleResume() {
+        mMovieList.refreshFavorites();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder
@@ -151,7 +155,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             Movie m = mMovieList.getMovie(position);
             Log.d(TAG, "Clicked on position "+position+" - "+mMovieList.getMovie(position).getTitle());
             Intent i = new Intent(mContext, MovieDetailsActivity.class);
-            String url = TheMovieDB.getMovieImageURL(m.getPoster_path());
+            String url = MovieDBApi.getMovieImageURL(m.getPoster_path());
 
             i.putExtra(Movie.KEY_ID, m.getId());
             i.putExtra(Movie.KEY_TITLE, m.getTitle());

@@ -1,23 +1,17 @@
 package il.co.ratners.popularmovies;
 
 
-import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 
-import il.co.ratners.popularmovies.data.FavoritesContract;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
 public class GridActivity extends AppCompatActivity {
@@ -61,13 +55,18 @@ public class GridActivity extends AppCompatActivity {
                 ShowAboutDialog();
                 break;
             case R.id.menu_sort_popularity:
-                PreferenceUtils.setSortOrder(this, PreferenceUtils.SORT_ORDER.POPULARITY);
+                PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.POPULARITY);
                 mGridAdapter.fullReset();
                 break;
             case R.id.menu_sort_rating:
-                PreferenceUtils.setSortOrder(this, PreferenceUtils.SORT_ORDER.RATING);
+                PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.RATING);
                 mGridAdapter.fullReset();
                 break;
+            case R.id.menu_favorites:
+                PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.FAVORITES);
+                mGridAdapter.fullReset();
+                break;
+
             default:
                 ret = false;
         }
@@ -93,7 +92,10 @@ public class GridActivity extends AppCompatActivity {
         builder.show();
     }
 
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGridAdapter.handleResume();
+    }
 }
 

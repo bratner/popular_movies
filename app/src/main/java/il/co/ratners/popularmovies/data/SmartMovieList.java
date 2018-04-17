@@ -1,9 +1,13 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,7 +22,6 @@ import il.co.ratners.popularmovies.GridActivity;
 import il.co.ratners.popularmovies.network.MovieDBApi;
 import il.co.ratners.popularmovies.network.MovieDBConnector;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
-import il.co.ratners.popularmovies.utils.TheMovieDB;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,9 +58,12 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
         mMovieConnector = new MovieDBConnector(context);
         mFavoritesMap = new SparseArray<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
-        ((GridActivity)context).getSupportLoaderManager().initLoader(1, null, this);
+        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(1, null, this);
     }
 
+    public void refreshFavorites() {
+        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(1, null, this);
+    }
     public void setUpdateListener(UpdateListener listener) {
         mUpdateListener = listener;
     }
@@ -89,6 +95,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         int movieIdIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_ID);
         int movieJsonIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_JSON);
+
+        mFavoritesMap.clear();
         while(data.moveToNext())
         {
             int movieId = data.getInt(movieIdIndex);
@@ -96,6 +104,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             mFavoritesMap.append(movieId, movieJson);
         }
         setMovieFavorites();
+        mUpdateListener.OnUpdate(0,0);
     }
 
     private void setMovieFavorites() {
@@ -139,10 +148,10 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         Log.d(TAG, "loadPage() " + page);
 
         switch (PreferenceUtils.getSortOrder(mContext)) {
-            case TheMovieDB.SORT_BY_POPULARITY:
+            case PreferenceUtils.POPULAR:
                 call = mMovieConnector.popular_movies(page+1, "en_US");
                 break;
-            case TheMovieDB.SORT_BY_RATING:
+            case PreferenceUtils.TOP_RATED:
                 call = mMovieConnector.top_rated(page+1, "en_US");
                 break;
             default:

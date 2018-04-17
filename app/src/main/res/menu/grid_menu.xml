@@ -12,6 +12,8 @@
                 android:title="@string/menu_title_popularity" />
             <item android:id="@+id/menu_sort_rating"
                 android:title="@string/menu_title_rating"/>
+            <item android:id="@+id/menu_favorites"
+                android:title="@string/menu_title_favorites"/>
         </menu>
     </item>
     <item android:title="@string/menu_title_about"
