@@ -48,7 +48,7 @@ public class Movie {
     public static final String KEY_POSTER_URL = "poster_url";
     public static final String KEY_ID = "id";
     public static final String KEY_FAVORITE = "favorite";
-
+    public static final String KEY_JSON = "json";
 
     private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
@@ -145,7 +145,7 @@ public class Movie {
         return vote_average;
     }
 
-    public String getFormatedDate() {
+    public String getFormattedDate() {
         SimpleDateFormat sd = new SimpleDateFormat(OUTPUT_DATE_FIELD_FORMAT);
         return sd.format(release_date);
     }
@@ -165,7 +165,15 @@ public class Movie {
         return ret;
     }
 
+
+
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public static Movie fromJson(String s) {
+        Gson gson = new Gson();
+        Movie m = gson.fromJson(s, Movie.class);
+        return m;
     }
 }

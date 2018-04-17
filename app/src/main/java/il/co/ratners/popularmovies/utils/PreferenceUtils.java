@@ -14,7 +14,7 @@ public class PreferenceUtils {
 
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
-    public static final String FAVORITES = "top_rated";
+    public static final String FAVORITES = "favorites";
     public static final String DEFAULT_GRID = POPULAR;
 
     public enum GRID_CONTENT {
@@ -49,6 +49,7 @@ public class PreferenceUtils {
                 break;
             case FAVORITES:
                 sortOrderString = FAVORITES;
+                break;
             default:
                 Log.e(TAG, "Defaulting Sort Order");
                 sortOrderString = defaultSortOrder;

@@ -122,13 +122,17 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
                 .into(holder.mMoviePosterImageView);
     }
 
-    /* Returns the size fo the internal list plus one. The last one is always the loading
-        progress bar item.
-        TODO: Movie list can be final as well. So the adapter should ask mMovieList if it is final or infinite.
+    /* Returns the size fo the internal list plus one.
+        for infinite/paged
+            The last one is always the loading progress bar item.
+
      */
     @Override
     public int getItemCount() {
-        return mMovieList.size()+1;
+        if (mMovieList.isFinite())
+            return mMovieList.size();
+        else
+            return mMovieList.size()+1;
     }
 
     public void handleResume() {
@@ -162,9 +166,10 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             i.putExtra(Movie.KEY_ORIGINAL_TITLE, m.getOriginalTitle());
             i.putExtra(Movie.KEY_OVERVIEW, m.getOverview());
             i.putExtra(Movie.KEY_RATING, m.getRating());
-            i.putExtra(Movie.KEY_RELEASE_DATE, m.getFormatedDate());
+            i.putExtra(Movie.KEY_RELEASE_DATE, m.getFormattedDate());
             i.putExtra(Movie.KEY_POSTER_URL, url);
             i.putExtra(Movie.KEY_FAVORITE, m.isFavorite());
+            i.putExtra(Movie.KEY_JSON, m.toJson());
             Log.d(TAG, "Movie to JSON "+m.toJson());
             mContext.startActivity(i);
         }

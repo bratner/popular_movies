@@ -40,6 +40,7 @@ public class MovieDetailsActivity extends AppCompatActivity
     private int mMovieId = NO_ID;
     private boolean mFavoirte;
     private String mTitle;
+    private String mJson;
 
 
 
@@ -62,6 +63,7 @@ public class MovieDetailsActivity extends AppCompatActivity
         String url = i.getStringExtra(Movie.KEY_POSTER_URL);
         mMovieId = i.getIntExtra(Movie.KEY_ID, NO_ID);
         mFavoirte = i.getBooleanExtra(Movie.KEY_FAVORITE, false);
+        mJson = i.getStringExtra(Movie.KEY_JSON);
 
         if (mTitle != null)
             actionBar.setTitle(mTitle);
@@ -221,7 +223,7 @@ public class MovieDetailsActivity extends AppCompatActivity
 
     private void addToFavorites() {
         FavoritesRequest request = new FavoritesRequest(this, FavoritesRequest.ADD_ACTION,
-                mMovieId, this, "JSON-TEXT-OF-THE-MOVIE: "+mTitle);
+                mMovieId, this, mJson);
         request.execute();
     }
 

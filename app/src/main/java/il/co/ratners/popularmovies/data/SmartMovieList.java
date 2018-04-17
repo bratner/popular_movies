@@ -1,13 +1,9 @@
 package il.co.ratners.popularmovies.data;
 
 import android.content.Context;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -51,6 +47,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     private boolean loading = false;
     private final MovieDBConnector mMovieConnector;
     private SparseArray<String> mFavoritesMap;
+    private boolean mFinite = false;
+    private boolean mUseFavorites = false;
 
 
     public SmartMovieList(Context context) {
@@ -77,7 +75,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         lastLoadedPage = -1;
         if (loading)
         {
-            mPageGetter.cancel(true);
+            if (mPageGetter != null)
+                mPageGetter.cancel(true);
             loading = false;
         }
         mMovies.clear();
@@ -103,8 +102,25 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             String movieJson = data.getString(movieJsonIndex);
             mFavoritesMap.append(movieId, movieJson);
         }
-        setMovieFavorites();
+
+        if (mUseFavorites)
+            fillInFavorites();
+        else
+            setMovieFavorites();
         mUpdateListener.OnUpdate(0,0);
+    }
+
+    private void fillInFavorites() {
+        mMovies.clear();
+        for (int i = 0; i < mFavoritesMap.size(); i++) {
+
+            int movieId = mFavoritesMap.keyAt(i);
+            String jsonMovie = mFavoritesMap.get(movieId);
+            Movie m = Movie.fromJson(jsonMovie);
+            mMovies.add(m);
+        }
+        mFinite = true;
+
     }
 
     private void setMovieFavorites() {
@@ -120,6 +136,10 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mFavoritesMap.clear();
+    }
+
+    public boolean isFinite() {
+        return mFinite;
     }
 
     /* Callback mechanism to update the recyclerview when loading is done */
@@ -140,19 +160,24 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     private void loadPage(int page) {
-        Call<MovieDBApi.MovieDBList> call;
+
+        Call<MovieDBApi.MovieDBList> call = null;
 
         if(loading)
             return;
         loading = true;
         Log.d(TAG, "loadPage() " + page);
-
+        mUseFavorites = false;
+        mFinite = false;
         switch (PreferenceUtils.getSortOrder(mContext)) {
             case PreferenceUtils.POPULAR:
                 call = mMovieConnector.popular_movies(page+1, "en_US");
                 break;
             case PreferenceUtils.TOP_RATED:
                 call = mMovieConnector.top_rated(page+1, "en_US");
+                break;
+            case PreferenceUtils.FAVORITES:
+                mUseFavorites = true;
                 break;
             default:
                 call = null;
