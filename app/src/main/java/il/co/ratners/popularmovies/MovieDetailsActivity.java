@@ -38,6 +38,7 @@ public class MovieDetailsActivity extends AppCompatActivity
     private ActivityMovieDetailsBinding mBinding;
     private MovieDBConnector mMovieDB;
     private int mMovieId = NO_ID;
+    private boolean mFavoirte;
     private String mTitle;
 
 
@@ -60,6 +61,7 @@ public class MovieDetailsActivity extends AppCompatActivity
         mTitle = i.getStringExtra(Movie.KEY_TITLE);
         String url = i.getStringExtra(Movie.KEY_POSTER_URL);
         mMovieId = i.getIntExtra(Movie.KEY_ID, NO_ID);
+        mFavoirte = i.getBooleanExtra(Movie.KEY_FAVORITE, false);
 
         if (mTitle != null)
             actionBar.setTitle(mTitle);
@@ -73,6 +75,7 @@ public class MovieDetailsActivity extends AppCompatActivity
                 .into(mBinding.ivMoviePoster);
 
         mBinding.detailsText.swFavorite.setOnCheckedChangeListener(this);
+        mBinding.detailsText.swFavorite.setChecked(mFavoirte);
 
         mMovieDB = new MovieDBConnector(this);
 

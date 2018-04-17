@@ -69,7 +69,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public void reset() {
         lastLoadedPage = -1;
-        if(loading)
+        if (loading)
         {
             mPageGetter.cancel(true);
             loading = false;
@@ -125,7 +125,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
      /*   Log.d(TAG, "getMovie() position: "+position);*/
         if (position < mMovies.size())
             return mMovies.get(position);
-
 
         loadPage(lastLoadedPage+1);
         return null;
@@ -184,7 +183,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
                 Log.d(TAG, "Failed fetching a page");
             }
         });
-
     }
 
     private synchronized void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {
