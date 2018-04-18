@@ -115,15 +115,11 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     /* Returns the size fo the internal list plus one.
         for infinite/paged
             The last one is always the loading progress bar item.
-
      */
     @Override
     public int getItemCount() {
         Log.d(TAG, "Real count is "+mMovieList.size());
-        if (mMovieList.isFinite())
-            return mMovieList.size();
-        else
-            return mMovieList.size()+1;
+        return mMovieList.size()+1;
     }
 
     public void handleResume() {
@@ -135,13 +131,6 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
     public void OnUpdate(int startPos, int itemCount) {
         Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
         notifyItemRangeChanged(startPos, itemCount);
-    }
-
-    /* For favorites removals */
-    @Override
-    public void OnRemove(int startIndex, int itemCount) {
-        Log.d(TAG, "OnRemove() start: "+startIndex+" itemCount: "+itemCount);
-        notifyItemRangeRemoved(startIndex, itemCount);
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder
@@ -184,6 +173,5 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         mMovieList.reset();
         notifyDataSetChanged();
     }
-
 
 }

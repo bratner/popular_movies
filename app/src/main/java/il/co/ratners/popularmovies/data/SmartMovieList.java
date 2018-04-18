@@ -47,8 +47,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     private boolean loading = false;
     private final MovieDBConnector mMovieConnector;
     private SparseArray<String> mFavoritesMap;
-    private boolean mFinite = false;
-    private boolean mUseFavorites = false;
 
 
     public SmartMovieList(Context context) {
@@ -82,7 +80,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         mMovies.clear();
         mMovies.ensureCapacity(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
         refreshFavorites();
-        loadPage(0);
     }
 
     @Override
@@ -108,62 +105,29 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             mFavoritesMap.append(movieId, movieJson);
         }
 
-        if (mUseFavorites)
-            fillInFavorites();
-        else
-            setMovieFavorites();
-    }
-
-    private synchronized  void fillInFavorites() {
-        Log.d(TAG, "Filling in Favorites. Size: "+mFavoritesMap.size());
-
-        if (mFavoritesMap.size() == 0)
-            return;
-
-        AsyncTask<Void,Void,ArrayList<Movie>> task = new AsyncTask<Void, Void, ArrayList<Movie>>() {
-            @Override
-            protected ArrayList<Movie> doInBackground(Void... voids) {
-                Log.d("favorteFillingTask", "doing the background work.");
-                ArrayList<Movie> favoriteMovies = new ArrayList<>(mFavoritesMap.size());
-
-                for (int i = 0; i < mFavoritesMap.size(); i++) {
-
-                    int movieId = mFavoritesMap.keyAt(i);
-                    String jsonMovie = mFavoritesMap.get(movieId);
-                    Movie m = Movie.fromJson(jsonMovie);
-                    m.setFavorite(true);
-                    favoriteMovies.add(m);
-                }
-                return favoriteMovies;
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Movie> favoriteMovies) {
-                Log.d("favorteFillingTask", "doing the post work.");
-                for (Movie m: mMovies)
-                {
-                    if (!favoriteMovies.contains(m))
-                    {
-                        mUpdateListener.OnRemove(mMovies.indexOf(m),1);
-                    }
-                }
-                mFinite = true;
-                addPageToCache(0,favoriteMovies);
-            }
-        };
-
-        //mUpdateListener.OnRemove(0, favoriteMovies.size());
+        setMovieFavorites();
     }
 
     private void setMovieFavorites() {
-        for (Movie m: mMovies)
+        for (int idx = 0; idx < mMovies.size(); idx++)
         {
-          if (mFavoritesMap.get(m.getId()) != null)
-              m.setFavorite(true);
-          else
-              m.setFavorite(false);
+            Movie m = mMovies.get(idx);
+            boolean changed = false;
 
-          mUpdateListener.OnRemove(mMovies.indexOf(m),1);
+            /* if movie in favorites and not marked as such or not in favorites but is marked*/
+            if (mFavoritesMap.get(m.getId()) != null) {
+                if (!m.isFavorite()) {
+                    m.setFavorite(true);
+                    changed = true;
+                }
+            } else if (m.isFavorite()) {
+                m.setFavorite(false);
+                changed = true;
+            }
+
+            /* let recyclerview know */
+            if (changed)
+                mUpdateListener.OnUpdate(idx, 1);
         }
     }
 
@@ -172,14 +136,10 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         mFavoritesMap.clear();
     }
 
-    public boolean isFinite() {
-        return mFinite;
-    }
 
     /* Callback mechanism to update the recyclerview when loading is done */
     public interface UpdateListener {
         void OnUpdate (int startIndex, int count);
-        void OnRemove(int startIndex, int count);
     }
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
@@ -202,20 +162,12 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             return;
         loading = true;
         Log.d(TAG, "loadPage() " + page);
-        mUseFavorites = false;
-        mFinite = false;
         switch (PreferenceUtils.getGridContentType(mContext)) {
             case PreferenceUtils.POPULAR:
-                mFinite = false;
                 call = mMovieConnector.popular_movies(page+1, "en_US");
                 break;
             case PreferenceUtils.TOP_RATED:
                 call = mMovieConnector.top_rated(page+1, "en_US");
-                break;
-            case PreferenceUtils.FAVORITES:
-                mUseFavorites = true;
-
-                fillInFavorites();
                 break;
             default:
                 call = null;

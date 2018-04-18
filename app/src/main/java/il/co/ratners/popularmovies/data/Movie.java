@@ -141,22 +141,4 @@ public class Movie {
         Movie m = gson.fromJson(s, Movie.class);
         return m;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-
-        if (obj instanceof Movie) {
-            Log.d(TAG, "Comparing Movie "+getId()+" and "+((Movie) obj).getId());
-            return ((Movie) obj).getId() == getId();
-        }
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        Log.d(TAG, "Hashcoding Movie "+getId());
-        return getId();
-    }
 }
