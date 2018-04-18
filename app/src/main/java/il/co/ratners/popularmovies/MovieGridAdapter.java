@@ -24,15 +24,15 @@ import il.co.ratners.popularmovies.network.MovieDBApi;
  * which manages web request and keeps the actual movie data.
  */
 
-class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder> {
+class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder>
+        implements SmartMovieList.UpdateListener
+{
 
     private static final String TAG = MovieGridAdapter.class.getSimpleName();
     private Context mContext;
     private SmartMovieList mMovieList;
     private Map<Integer, String> mFavorites;
     GridLayoutManager.SpanSizeLookup mSpanLookup;
-
-
 
 
     private boolean isLoadingIndicator(int position)
@@ -58,17 +58,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
             }
         };
 
-        mMovieList.setUpdateListener(new SmartMovieList.UpdateListener() {
-            @Override
-            public void OnUpdate(int startPos, int itemCount) {
-                Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
-                //notifyItemRangeChanged(startPos, itemCount);
-                notifyDataSetChanged();
-            }
-        });
-
-        /* Start the download */
-       // mMovieList.getMovie(0);
+        mMovieList.setUpdateListener(this);
     }
 
     @Override
@@ -129,6 +119,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
      */
     @Override
     public int getItemCount() {
+        Log.d(TAG, "Real count is "+mMovieList.size());
         if (mMovieList.isFinite())
             return mMovieList.size();
         else
@@ -137,6 +128,20 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
 
     public void handleResume() {
         mMovieList.refreshFavorites();
+    }
+
+    /* For paging updates, they just add movies to the list */
+    @Override
+    public void OnUpdate(int startPos, int itemCount) {
+        Log.d(TAG, "OnUpdate() start: "+startPos+" itemCount: "+itemCount);
+        notifyItemRangeChanged(startPos, itemCount);
+    }
+
+    /* For favorites removals */
+    @Override
+    public void OnRemove(int startIndex, int itemCount) {
+        Log.d(TAG, "OnRemove() start: "+startIndex+" itemCount: "+itemCount);
+        notifyItemRangeRemoved(startIndex, itemCount);
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder
@@ -179,5 +184,6 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         mMovieList.reset();
         notifyDataSetChanged();
     }
+
 
 }

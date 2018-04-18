@@ -45,6 +45,7 @@ public class FavoritesProvider extends ContentProvider {
         final SQLiteDatabase  db = mDB.getReadableDatabase();
         Cursor ret = null;
 
+        Log.d(TAG, "Query request: "+uri);
         switch (matchResult) {
             case CODE_MOVIE:
                 ret = db.query(FavoritesContract.FavoritesEntry.TABLE_NAME,
@@ -65,6 +66,7 @@ public class FavoritesProvider extends ContentProvider {
                 break;
 
         }
+        Log.d(TAG, "Query result: "+ret.getCount()+" rows");
         return ret;
     }
 
@@ -78,6 +80,7 @@ public class FavoritesProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
 
+        Log.d(TAG, "Insert: "+uri);
         int uriMatch = mUriMatcher.match(uri);
         if (uriMatch != CODE_MOVIE)
             return null;
@@ -89,12 +92,12 @@ public class FavoritesProvider extends ContentProvider {
             return null;
 
         getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(FavoritesContract.FavoritesEntry.CONTENT_URI, null);
         return uri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        Log.d(TAG, "Delete: "+uri);
         int uriMatch = mUriMatcher.match(uri);
         if (uriMatch != CODE_MOVIE)
             return 0;

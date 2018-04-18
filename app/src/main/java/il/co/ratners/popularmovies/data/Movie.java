@@ -90,41 +90,6 @@ public class Movie {
         return m;
     }
 
-    /**
-     * Takes in a JSON object and returns a newly created Movie object or null on error.
-
-     */
-    public static Movie parseJsonToMovie(JSONObject movie_json)
-    {
-        Movie m = new Movie();
-
-        /* All fields are mandatory, using exceptions to catch missing fields */
-        try {
-
-            m.id = movie_json.getInt(ID_FIELD);
-            m.title = movie_json.getString(TITLE_FIELD);
-            m.original_title = movie_json.getString(ORIGINAL_TITLE_FIELD);
-            m.poster_path = movie_json.getString(POSTER_PATH_FIELD);
-            m.backdrop_path = movie_json.getString(BACKDROP_PATH_FIELD);
-            m.overview = movie_json.getString(OVERVIEW_FIELD);
-            m.vote_average = movie_json.getString(VOTE_AVERAGE_FIELD);
-            m.vote_count = movie_json.getInt(VOTE_COUNT_FIELD);
-
-            String release_date_string = movie_json.getString(RELEASE_DATE_FIELD);
-            SimpleDateFormat sdf = new SimpleDateFormat(INPUT_DATE_FIELD_FORMAT, Locale.ENGLISH);
-            m.release_date = sdf.parse(release_date_string);
-
-        } catch (JSONException jex) {
-            Log.e(TAG, "Failed parsing JSON object. Exception: "+jex);
-            return null;
-        } catch (ParseException dex) {
-            Log.e(TAG, "Failed converting JSON strings. Exception: "+dex);
-            return null;
-        }
-
-        return m;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -175,5 +140,23 @@ public class Movie {
         Gson gson = new Gson();
         Movie m = gson.fromJson(s, Movie.class);
         return m;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+
+        if (obj instanceof Movie) {
+            Log.d(TAG, "Comparing Movie "+getId()+" and "+((Movie) obj).getId());
+            return ((Movie) obj).getId() == getId();
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        Log.d(TAG, "Hashcoding Movie "+getId());
+        return getId();
     }
 }

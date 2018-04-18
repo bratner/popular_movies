@@ -26,7 +26,7 @@ public class PreferenceUtils {
 
 
     /* retrieve the sort order stri ng needed to complete the API request URL */
-    public static String getSortOrder(Context context) {
+    public static String getGridContentType(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String keyForSortOrder = PreferenceUtils.GRID_TYPE_KEY;
         String defaultSortOrder = DEFAULT_GRID;

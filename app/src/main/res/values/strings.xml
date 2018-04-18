@@ -21,4 +21,7 @@
     <string name="mock_review_text">Jessica says \"This is a long review which must be a bit long to test wraping\"</string>
     <string name="favorite">Favorite</string>
     <string name="menu_title_favorites">Favorites</string>
+    <string name="favorites">Favorite Movies</string>
+    <string name="top_rated">Top rated Movies</string>
+    <string name="by_popularity">Popular Movies</string>
 </resources>

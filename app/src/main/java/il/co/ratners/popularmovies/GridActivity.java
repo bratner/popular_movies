@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.view.View;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
 public class GridActivity extends AppCompatActivity {
+    public final static String TAG = GridActivity.class.getSimpleName();
     private RecyclerView mGridRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MovieGridAdapter mGridAdapter;
@@ -23,7 +25,7 @@ public class GridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
         mGridRecyclerView = findViewById(R.id.movie_grid_rv);
-
+        mGridRecyclerView.setHasFixedSize(false);
         /* TODO: consider calculating the number of columns based on width in DP and DPI.
          * Might be better then using a reasonable default for various orientations.
          */
@@ -38,6 +40,8 @@ public class GridActivity extends AppCompatActivity {
         mGridRecyclerView.setLayoutManager(mGridLayoutManager);
         mGridRecyclerView.setAdapter(mGridAdapter);
 
+        updateTitle();
+
     }
 
     @Override
@@ -47,6 +51,23 @@ public class GridActivity extends AppCompatActivity {
         return true;
     }
 
+    private void updateTitle() {
+        String content = PreferenceUtils.getGridContentType(this);
+        String newTitle = null;
+        switch (content) {
+            case PreferenceUtils.POPULAR:
+                newTitle = getString(R.string.by_popularity);
+                break;
+            case PreferenceUtils.TOP_RATED:
+                newTitle = getString(R.string.top_rated);
+                break;
+            case PreferenceUtils.FAVORITES:
+                newTitle = getString(R.string.favorites);
+                break;
+        }
+
+        getSupportActionBar().setTitle(newTitle);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean ret = true;
@@ -70,6 +91,7 @@ public class GridActivity extends AppCompatActivity {
             default:
                 ret = false;
         }
+        updateTitle();
         return ret;
     }
 
@@ -94,8 +116,23 @@ public class GridActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+
+        Log.d(TAG, "RESUME");
         super.onResume();
         mGridAdapter.handleResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "PAUSE");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "SAVE_INSTANCE_STATE");
     }
 }
 

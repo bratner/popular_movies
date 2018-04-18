@@ -56,7 +56,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
         mMovieConnector = new MovieDBConnector(context);
         mFavoritesMap = new SparseArray<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
-        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(1, null, this);
     }
 
     public void refreshFavorites() {
@@ -67,11 +66,12 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     public int size() {
-        //Log.d(TAG, "size() returning "+mMovies.size());
+        Log.d(TAG, "size() returning "+mMovies.size());
         return mMovies.size();
     }
 
     public void reset() {
+        Log.d(TAG, "Reseting movie list.");
         lastLoadedPage = -1;
         if (loading)
         {
@@ -81,10 +81,13 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         }
         mMovies.clear();
         mMovies.ensureCapacity(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
+        refreshFavorites();
+        loadPage(0);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "Creating a CursorLoader for Favorites");
         CursorLoader loader = new CursorLoader(mContext, FavoritesContract.FavoritesEntry.CONTENT_URI,
                 null,null,null,null);
         return loader;
@@ -92,6 +95,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(TAG, "Favorites loader finished with: "+data.getCount()+" rows.");
+
         int movieIdIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_ID);
         int movieJsonIndex = data.getColumnIndex(FavoritesContract.FavoritesEntry.MOVIE_JSON);
 
@@ -107,20 +112,47 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             fillInFavorites();
         else
             setMovieFavorites();
-        mUpdateListener.OnUpdate(0,0);
     }
 
-    private void fillInFavorites() {
-        mMovies.clear();
-        for (int i = 0; i < mFavoritesMap.size(); i++) {
+    private synchronized  void fillInFavorites() {
+        Log.d(TAG, "Filling in Favorites. Size: "+mFavoritesMap.size());
 
-            int movieId = mFavoritesMap.keyAt(i);
-            String jsonMovie = mFavoritesMap.get(movieId);
-            Movie m = Movie.fromJson(jsonMovie);
-            mMovies.add(m);
-        }
-        mFinite = true;
+        if (mFavoritesMap.size() == 0)
+            return;
 
+        AsyncTask<Void,Void,ArrayList<Movie>> task = new AsyncTask<Void, Void, ArrayList<Movie>>() {
+            @Override
+            protected ArrayList<Movie> doInBackground(Void... voids) {
+                Log.d("favorteFillingTask", "doing the background work.");
+                ArrayList<Movie> favoriteMovies = new ArrayList<>(mFavoritesMap.size());
+
+                for (int i = 0; i < mFavoritesMap.size(); i++) {
+
+                    int movieId = mFavoritesMap.keyAt(i);
+                    String jsonMovie = mFavoritesMap.get(movieId);
+                    Movie m = Movie.fromJson(jsonMovie);
+                    m.setFavorite(true);
+                    favoriteMovies.add(m);
+                }
+                return favoriteMovies;
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Movie> favoriteMovies) {
+                Log.d("favorteFillingTask", "doing the post work.");
+                for (Movie m: mMovies)
+                {
+                    if (!favoriteMovies.contains(m))
+                    {
+                        mUpdateListener.OnRemove(mMovies.indexOf(m),1);
+                    }
+                }
+                mFinite = true;
+                addPageToCache(0,favoriteMovies);
+            }
+        };
+
+        //mUpdateListener.OnRemove(0, favoriteMovies.size());
     }
 
     private void setMovieFavorites() {
@@ -130,6 +162,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
               m.setFavorite(true);
           else
               m.setFavorite(false);
+
+          mUpdateListener.OnRemove(mMovies.indexOf(m),1);
         }
     }
 
@@ -143,15 +177,16 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     /* Callback mechanism to update the recyclerview when loading is done */
-    public abstract static class UpdateListener {
-        public abstract void OnUpdate (int startIndex, int count);
+    public interface UpdateListener {
+        void OnUpdate (int startIndex, int count);
+        void OnRemove(int startIndex, int count);
     }
 
     /* Returns a movie object for recyclerview to display or null to attempt a load */
     /* DONE: think of a way to signal actual end of list if it is not infinite(ish)
     *  Solution: actually very simple, size given == actual list size, no nulls */
     public Movie getMovie(int position) {
-     /*   Log.d(TAG, "getMovie() position: "+position);*/
+       Log.d(TAG, "getMovie() position: "+position+" current size "+mMovies.size());
         if (position < mMovies.size())
             return mMovies.get(position);
 
@@ -169,8 +204,9 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         Log.d(TAG, "loadPage() " + page);
         mUseFavorites = false;
         mFinite = false;
-        switch (PreferenceUtils.getSortOrder(mContext)) {
+        switch (PreferenceUtils.getGridContentType(mContext)) {
             case PreferenceUtils.POPULAR:
+                mFinite = false;
                 call = mMovieConnector.popular_movies(page+1, "en_US");
                 break;
             case PreferenceUtils.TOP_RATED:
@@ -178,6 +214,8 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
                 break;
             case PreferenceUtils.FAVORITES:
                 mUseFavorites = true;
+
+                fillInFavorites();
                 break;
             default:
                 call = null;
