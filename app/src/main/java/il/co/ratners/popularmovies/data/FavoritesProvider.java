@@ -66,6 +66,7 @@ public class FavoritesProvider extends ContentProvider {
                 break;
 
         }
+        ret.setNotificationUri(getContext().getContentResolver(), uri);
         Log.d(TAG, "Query result: "+ret.getCount()+" rows");
         return ret;
     }
@@ -107,7 +108,6 @@ public class FavoritesProvider extends ContentProvider {
                 FavoritesContract.FavoritesEntry.MOVIE_ID + "=?",
                 new String[]{uri.getLastPathSegment()});
         getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(FavoritesContract.FavoritesEntry.CONTENT_URI, null);
         return ret;
     }
 

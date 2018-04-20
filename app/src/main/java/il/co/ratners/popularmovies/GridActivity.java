@@ -16,32 +16,64 @@ import android.view.View;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
 
 public class GridActivity extends AppCompatActivity {
+
+
     public final static String TAG = GridActivity.class.getSimpleName();
+
+
     private RecyclerView mGridRecyclerView;
     private GridLayoutManager mGridLayoutManager;
-    private MovieGridAdapter mGridAdapter;
+    private MoviePagedAdapter moviePagedAdapter;
+    private MovieStaticAdapter favoritesAdapter;
+    private boolean mPagedGrid = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
+
+
         mGridRecyclerView = findViewById(R.id.movie_grid_rv);
-        mGridRecyclerView.setHasFixedSize(false);
+        //TODO: test this
+//        mGridRecyclerView.setHasFixedSize(true);
         /* TODO: consider calculating the number of columns based on width in DP and DPI.
          * Might be better then using a reasonable default for various orientations.
          */
         int calculate_number_of_columns = getResources().getInteger(R.integer.movie_grid_number_of_columns);
         mGridLayoutManager = new GridLayoutManager(this, calculate_number_of_columns);
-        mGridAdapter = new MovieGridAdapter(this);
+        moviePagedAdapter = new MoviePagedAdapter(this);
+        favoritesAdapter = new MovieStaticAdapter(this);
 
         /* The Adapter is responsible for orchestrating the loading. So it will tell
            the grid which is the loading indicator
           */
-        mGridLayoutManager.setSpanSizeLookup(mGridAdapter.mSpanLookup);
         mGridRecyclerView.setLayoutManager(mGridLayoutManager);
-        mGridRecyclerView.setAdapter(mGridAdapter);
+
+        resetGridAdaptersPagingState();
 
         updateTitle();
 
+    }
+
+    private void resetGridAdaptersPagingState()
+    {
+        mPagedGrid = retrievePagingState();
+        if(mPagedGrid) {
+            mGridLayoutManager.setSpanSizeLookup(moviePagedAdapter.mSpanLookup);
+            mGridRecyclerView.setAdapter(moviePagedAdapter);
+            moviePagedAdapter.notifyDataSetChanged();
+        } else {
+            mGridLayoutManager.setSpanCount(getResources().getInteger(R.integer.movie_grid_number_of_columns));
+            favoritesAdapter = new MovieStaticAdapter(this);
+            mGridRecyclerView.setAdapter(favoritesAdapter);
+        }
+    }
+    private boolean retrievePagingState() {
+        boolean ret = true;
+        if (PreferenceUtils.getGridContentType(this).equals(PreferenceUtils.FAVORITES))
+            ret = false;
+
+        return ret;
     }
 
     @Override
@@ -77,21 +109,26 @@ public class GridActivity extends AppCompatActivity {
                 break;
             case R.id.menu_sort_popularity:
                 PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.POPULARITY);
-                mGridAdapter.fullReset();
+                updateTitle();
+                resetGridAdaptersPagingState();
+                moviePagedAdapter.fullReset();
                 break;
             case R.id.menu_sort_rating:
                 PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.RATING);
-                mGridAdapter.fullReset();
+                updateTitle();
+                resetGridAdaptersPagingState();
+                moviePagedAdapter.fullReset();
                 break;
             case R.id.menu_favorites:
                 PreferenceUtils.setSortOrder(this, PreferenceUtils.GRID_CONTENT.FAVORITES);
-                mGridAdapter.fullReset();
+                updateTitle();
+                resetGridAdaptersPagingState();
                 break;
 
             default:
                 ret = false;
         }
-        updateTitle();
+
         return ret;
     }
 
@@ -119,7 +156,10 @@ public class GridActivity extends AppCompatActivity {
 
         Log.d(TAG, "RESUME");
         super.onResume();
-        mGridAdapter.handleResume();
+        if(mPagedGrid)
+            moviePagedAdapter.handleResume();
+        else
+            favoritesAdapter.handleResume();
 
     }
 

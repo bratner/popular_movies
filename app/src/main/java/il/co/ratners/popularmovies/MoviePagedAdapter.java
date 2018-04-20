@@ -20,15 +20,15 @@ import il.co.ratners.popularmovies.data.SmartMovieList;
 import il.co.ratners.popularmovies.network.MovieDBApi;
 
 /**
- * MovieGridAdapter - serves as a glue between RecylcerView requests and SmartMovieList
+ * MoviePagedAdapter - serves as a glue between RecylcerView requests and SmartMovieList
  * which manages web request and keeps the actual movie data.
  */
 
-class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHolder>
+class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieViewHolder>
         implements SmartMovieList.UpdateListener
 {
 
-    private static final String TAG = MovieGridAdapter.class.getSimpleName();
+    private static final String TAG = MoviePagedAdapter.class.getSimpleName();
     private Context mContext;
     private SmartMovieList mMovieList;
     private Map<Integer, String> mFavorites;
@@ -44,7 +44,7 @@ class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieViewHo
         return false;
     }
 
-    public MovieGridAdapter(Context context) {
+    public MoviePagedAdapter(Context context) {
         mContext = context;
         mMovieList = new SmartMovieList(mContext);
 
