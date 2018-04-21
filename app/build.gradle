@@ -46,9 +46,20 @@ dependencies {
 
 def getApiKey() {
     Properties props = new Properties()
-    props.load(new FileInputStream(new File('project.properties')))
-    print "Props: "
-    println props
+    File propFile = new File('project.properties');
+    if (propFile.isFile()) {
+        props.load(new FileInputStream(propFile))
+        if(!props.containsKey('API_KEY')) {
+            project.logger.lifecycle("Unable to find API_KEY in project.properties!")
+            throw new Exception("Unable to find API_KEY in project.properties!")
+        }
+        project.logger.lifecycle("Found API_KEY in project.properties.")
+    } else if(System.getenv().containsKey('TMDB_API_KEY')) {
+        project.logger.lifecycle("Found API_KEY in environment.")
+        props.setProperty('API_KEY', System.getenv('TMDB_API_KEY'))
+    } else {
+        throw new Exception("Unable to find API_KEY nor in project.properties nor the environment.")
+    }
 
     return props['API_KEY']
 }
