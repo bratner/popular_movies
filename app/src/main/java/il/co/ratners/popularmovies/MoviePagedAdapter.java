@@ -136,7 +136,7 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
      */
     @Override
     public int getItemCount() {
-        Log.d(TAG, "Real count is "+mMovieList.size());
+       // Log.d(TAG, "Real count is "+mMovieList.size());
         return mMovieList.size()+1;
     }
 

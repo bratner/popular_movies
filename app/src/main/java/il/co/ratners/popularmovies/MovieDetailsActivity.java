@@ -1,5 +1,6 @@
 package il.co.ratners.popularmovies;
 
+import android.app.LoaderManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -255,8 +256,12 @@ public class MovieDetailsActivity extends AppCompatActivity
 
     @Override
     public void onMovieFound(boolean found) {
-        Log.d(TAG, "Movie "+(found ? " was found": " was NOT found"));
-        mBinding.detailsText.swFavorite.setChecked(found);
+        //Log.d(TAG, "Movie "+(found ? " was found": " was NOT found"));
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 }

@@ -76,7 +76,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             Log.d(TAG, "Restoring state, lying about available movie list size.");
             ret = mRestoreMoviesCount;
         }
-        Log.d(TAG, "size() returning "+ret);
+        //Log.d(TAG, "size() returning "+ret);
         return ret;
     }
 
