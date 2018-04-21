@@ -116,6 +116,9 @@ public class MovieDBApi {
         }
     }
     public interface MovieDBFunctions {
+
+        // [PM2-26] - Not combining the list requests on purpose. Those are distinct API calls.
+
         @GET("movie/popular")
         Call<MovieDBList> popular_movies(
                 @Query("page") Integer page,
