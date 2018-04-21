@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import il.co.ratners.popularmovies.GridActivity;
+import il.co.ratners.popularmovies.R;
 import il.co.ratners.popularmovies.network.MovieDBApi;
 import il.co.ratners.popularmovies.network.MovieDBConnector;
 import il.co.ratners.popularmovies.utils.PreferenceUtils;
@@ -217,7 +218,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
                 if(!response.isSuccessful()) {
                     Log.e(TAG, "Failed fetching movie list");
-                    Toast.makeText(mContext,"Unable to fetch movie list" , Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.failed_fetching_movies , Toast.LENGTH_LONG).show();
                     return;
                 }
                 MovieDBApi.MovieDBList movieList = response.body();

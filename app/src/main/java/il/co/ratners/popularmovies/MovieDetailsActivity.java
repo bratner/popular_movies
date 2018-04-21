@@ -95,7 +95,7 @@ public class MovieDetailsActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBReviewList> call, Response<MovieDBApi.MovieDBReviewList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(MovieDetailsActivity.this, "Failed fetching review list",
+                    Toast.makeText(MovieDetailsActivity.this, R.string.failed_fetching_review,
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -105,7 +105,7 @@ public class MovieDetailsActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<MovieDBApi.MovieDBReviewList> call, Throwable t) {
-                Toast.makeText(MovieDetailsActivity.this, "Failed fetching review list",
+                Toast.makeText(MovieDetailsActivity.this, R.string.failed_fetching_review,
                         Toast.LENGTH_SHORT).show();
             }
         };
@@ -136,7 +136,7 @@ public class MovieDetailsActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<MovieDBApi.MovieDBVideoList> call, Response<MovieDBApi.MovieDBVideoList> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(MovieDetailsActivity.this, "Failed fetching trailer list",
+                    Toast.makeText(MovieDetailsActivity.this, R.string.failed_fetching_trailers,
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -146,7 +146,7 @@ public class MovieDetailsActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<MovieDBApi.MovieDBVideoList> call, Throwable t) {
-                Toast.makeText(MovieDetailsActivity.this, "Failed fetching trailer list",
+                Toast.makeText(MovieDetailsActivity.this,  R.string.failed_fetching_trailers,
                         Toast.LENGTH_SHORT).show();
             }
         };

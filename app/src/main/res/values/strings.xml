@@ -24,4 +24,8 @@
     <string name="favorites">Favorite Movies</string>
     <string name="top_rated">Top rated Movies</string>
     <string name="by_popularity">Popular Movies</string>
+    <string name="powered_by_the_movie_db">Powered by The Movie DB</string>
+    <string name="failed_fetching_review">Failed fetching review list</string>
+    <string name="failed_fetching_trailers">Failed fetching trailer list</string>
+    <string name="failed_fetching_movies">Unable to fetch movie list</string>
 </resources>

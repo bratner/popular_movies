@@ -1,5 +1,6 @@
 package il.co.ratners.popularmovies.data;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,16 +12,17 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
 
     /* Make it possible to notify when tasks are finished */
     public interface FavoritesResponseListener {
-        public abstract void onMovieRemoved(boolean really);
-        public abstract void onMovieAdded(boolean really);
-        public abstract void onMovieFound(boolean found);
+        void onMovieRemoved(boolean really);
+        void onMovieAdded(boolean really);
+        void onMovieFound(boolean found);
     }
 
     public static final int DELETE_ACTION = 1;
     public static final int FIND_ACTION = 2;
     public static final int ADD_ACTION = 3;
 
-    private Context mContext;
+    //private Context mContext;
+    ContentResolver mResolver;
     private int mAction;
     int mMovieId;
     String mData;
@@ -28,14 +30,16 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
 
     public FavoritesRequest(Context context, int action, int movieId, FavoritesResponseListener callback) {
         super();
-        mContext = context;
+        mResolver = context.getContentResolver();
+       // mContext = context;
         mAction = action;
         mMovieId = movieId;
         mCallback = callback;
     }
     public FavoritesRequest(Context context, int action, int movieId, FavoritesResponseListener callback, String data) {
         super();
-        mContext = context;
+        mResolver = context.getContentResolver();
+        //mContext = context;
         mAction = action;
         mMovieId = movieId;
         mData = data;
@@ -50,7 +54,7 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
         Uri movieUri = FavoritesContract.FavoritesEntry.CONTENT_URI.buildUpon().appendPath(""+mMovieId).build();
         switch (mAction) {
             case DELETE_ACTION:
-                int deleted = mContext.getContentResolver().delete(
+                int deleted = mResolver.delete(
                         movieUri,null, null);
                 ret = new Integer(deleted);
                 break;
@@ -58,11 +62,11 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
                 ContentValues vals = new ContentValues();
                 vals.put(FavoritesContract.FavoritesEntry.MOVIE_ID, ""+mMovieId);
                 vals.put(FavoritesContract.FavoritesEntry.MOVIE_JSON, mData);
-                Uri added = mContext.getContentResolver().insert(movieUri, vals);
+                Uri added = mResolver.insert(movieUri, vals);
                 ret = added;
                 break;
             case FIND_ACTION:
-                ret = mContext.getContentResolver().query(
+                ret = mResolver.query(
                         movieUri,
                         null,
                         null,
@@ -83,7 +87,7 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
                 mCallback.onMovieRemoved((Integer)result > 0);
                 break;
             case ADD_ACTION:
-                mCallback.onMovieAdded((Uri)result != null);
+                mCallback.onMovieAdded(result != null);
                 break;
             case FIND_ACTION:
                 mCallback.onMovieFound(((Cursor)result).getCount() > 0);

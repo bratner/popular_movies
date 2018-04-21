@@ -182,9 +182,4 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
         mMovieList.reset();
         notifyDataSetChanged();
     }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
 }
