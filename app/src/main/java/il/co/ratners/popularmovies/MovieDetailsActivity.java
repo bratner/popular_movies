@@ -1,14 +1,20 @@
 package il.co.ratners.popularmovies;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -33,20 +39,26 @@ public class MovieDetailsActivity extends AppCompatActivity
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
     private static final int NO_ID = -1;
+    private static final String TRAILERS_RV_POSITION = "TRAILERS_KEY";
     private MovieDBApi.MovieDBVideoList mTrailers;
     private MovieDBApi.MovieDBReviewList mReviewList;
     private ActivityMovieDetailsBinding mBinding;
     private MovieDBConnector mMovieDB;
+    private TrailerAdapter mTrailerAdapter;
     private int mMovieId = NO_ID;
     private String mJson;
 
     private Movie mMovie;
-
+    private LinearLayoutManager mTrailersLayoutManager;
+    private Parcelable mTrailersLayoutSavedState;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null )
+            mTrailersLayoutSavedState = savedInstanceState.getParcelable(TRAILERS_RV_POSITION);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         ActionBar actionBar = getSupportActionBar();
@@ -61,6 +73,7 @@ public class MovieDetailsActivity extends AppCompatActivity
         if (mMovie.getTitle() != null)
             actionBar.setTitle(mMovie.getTitle());
 
+
         mBinding.detailsText.tvOriginalTitle.setText(mMovie.getOriginalTitle());
         mBinding.detailsText.tvOverview.setText(mMovie.getOverview());
         mBinding.detailsText.tvRating.setText(mMovie.getRating());
@@ -74,7 +87,10 @@ public class MovieDetailsActivity extends AppCompatActivity
         mBinding.detailsText.swFavorite.setChecked(mMovie.isFavorite());
 
         mMovieDB = new MovieDBConnector(this);
-
+        mTrailersLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mBinding.trailersAndReviews.rvHorizonatlTrailers.setLayoutManager(mTrailersLayoutManager);
+        mTrailerAdapter = new TrailerAdapter();
+        mBinding.trailersAndReviews.rvHorizonatlTrailers.setAdapter(mTrailerAdapter);
         /* Make sure we got a real ID before using it for web requests */
         if (mMovieId != NO_ID) {
             mMovieDB.getMovieVideos(mMovieId).enqueue(videoListCallback());
@@ -84,6 +100,11 @@ public class MovieDetailsActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(TRAILERS_RV_POSITION, mTrailersLayoutManager.onSaveInstanceState());
+    }
 
     private Callback<MovieDBApi.MovieDBReviewList> reviewListCallback() {
         return new Callback<MovieDBApi.MovieDBReviewList>() {
@@ -115,6 +136,7 @@ public class MovieDetailsActivity extends AppCompatActivity
 
             return;
         }
+
 
          ArrayAdapter<MovieDBApi.MovieDBReview> adapter = new ArrayAdapter<MovieDBApi.MovieDBReview>(this,
                 R.layout.review_list_item, R.id.tv_review_content,mReviewList.getReviewList());
@@ -153,26 +175,19 @@ public class MovieDetailsActivity extends AppCompatActivity
         {
 
             mBinding.trailersAndReviews.labelTrailers.setVisibility(View.GONE);
-            mBinding.trailersAndReviews.lvTrailerList.setVisibility(View.GONE);
+            mBinding.trailersAndReviews.rvHorizonatlTrailers.setVisibility(View.GONE);
+
 
             return;
         }
-        ArrayAdapter<MovieDBApi.MovieDBVideo> adapter = new ArrayAdapter<MovieDBApi.MovieDBVideo>(this,
-                R.layout.trailer_list_item, R.id.tv_video_description,mTrailers.getList());
-
-        mBinding.trailersAndReviews.lvTrailerList.setAdapter(adapter);
-
-        mBinding.trailersAndReviews.lvTrailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieDBApi.MovieDBVideo video = mTrailers.getList().get(position);
-                watchYoutubeVideo(video.getVideoKey());
-            }
-        });
-
+        mTrailerAdapter.setTrailers(mTrailers.getList());
         mBinding.trailersAndReviews.labelTrailers.setText(getString(R.string.trailers, mTrailers.getList().size()));
         mBinding.trailersAndReviews.labelTrailers.setVisibility(View.VISIBLE);
-        mBinding.trailersAndReviews.lvTrailerList.setVisibility(View.VISIBLE);
+        mBinding.trailersAndReviews.rvHorizonatlTrailers.setVisibility(View.VISIBLE);
+        if(mTrailersLayoutSavedState != null) {
+            mTrailersLayoutManager.onRestoreInstanceState(mTrailersLayoutSavedState);
+            mTrailersLayoutSavedState = null;
+        }
 
     }
 
@@ -182,14 +197,14 @@ public class MovieDetailsActivity extends AppCompatActivity
         Based on an SO answer in:
             https://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
     */
-    private void watchYoutubeVideo(String id){
+    public static void watchYoutubeVideo(Context context, String id){
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse("http://www.youtube.com/watch?v=" + id));
         try {
-            startActivity(appIntent);
+            context.startActivity(appIntent);
         } catch (ActivityNotFoundException ex) {
-            startActivity(webIntent);
+            context.startActivity(webIntent);
         }
     }
 
@@ -243,6 +258,5 @@ public class MovieDetailsActivity extends AppCompatActivity
         Log.d(TAG, "Movie "+(found ? " was found": " was NOT found"));
         mBinding.detailsText.swFavorite.setChecked(found);
     }
-
 
 }

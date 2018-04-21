@@ -42,9 +42,6 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private Context mContext;
     private UpdateListener mUpdateListener;
-    private AsyncTask<Integer, Void, ArrayList<Movie>> mPageGetter;
-    private Retrofit mRetrofit;
-
 
     private int lastLoadedPage = -1;
     private boolean loading = false;
@@ -92,14 +89,11 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
         Log.d(TAG, "Reseting movie list.");
         lastLoadedPage = -1;
         if (loading)
-        {
-            if (mPageGetter != null)
-                mPageGetter.cancel(true);
             loading = false;
-        }
         mMovies.clear();
         mMovies.ensureCapacity(INITAL_CACHE_PAGES*ITEMS_PER_PAGE);
         refreshFavorites();
+        loadPage(0);
     }
 
     @Override

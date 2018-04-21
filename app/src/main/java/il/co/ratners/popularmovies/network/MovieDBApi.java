@@ -87,12 +87,20 @@ public class MovieDBApi {
         }
 
         public String getVideoLink() {
-            String link = "http://youtube.com/watch?v="+key;
+            String link = "https://youtube.com/watch?v="+key;
+            return link;
+        }
+        public String getThumbnailLink() {
+            String link = "https://img.youtube.com/vi/"+key+"/0.jpg";
             return link;
         }
 
         public String getVideoKey() {
             return key;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
