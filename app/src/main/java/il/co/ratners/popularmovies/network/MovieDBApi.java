@@ -19,10 +19,12 @@ import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
 public class MovieDBApi {
 
     public static final String API_URL = "https://api.themoviedb.org/3/";
+    public static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
 
 
     private static final String IMAGES_URL = "https://image.tmdb.org/t/p/";
     private static final String DEFAULT_IMAGE_SIZE = "w185";
+
 
 
     /* public static final  String SORT_BY_POPULARITY = "popular"; */

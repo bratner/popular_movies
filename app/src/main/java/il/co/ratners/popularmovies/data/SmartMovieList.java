@@ -30,6 +30,8 @@ import retrofit2.Retrofit;
 
 public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String SMART_LIST_PAGE_COUNT = "SMART_LIST_PAGE_COUNT";
+    public static final String SMART_LIST_MOVIE_COUNT = "SMART_LIST_MOVIE_COUNT";
     private static String TAG = SmartMovieList.class.getSimpleName();
     /* Themoviedb returns 20 results per page. Assuming this as true for now */
     private final int INITAL_CACHE_PAGES = 3;
@@ -47,9 +49,13 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     private boolean loading = false;
     private final MovieDBConnector mMovieConnector;
     private SparseArray<String> mFavoritesMap;
+    private boolean mRestoringState = false;
+    private int mRestorePagesToLoad;
+    private int mRestoreMoviesCount;
 
 
     public SmartMovieList(Context context) {
+
         mContext = context;
         mMovies = new Vector<>(INITAL_CACHE_PAGES*ITEMS_PER_PAGE, ITEMS_PER_PAGE);
         mMovieConnector = new MovieDBConnector(context);
@@ -64,11 +70,21 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     public int size() {
-        Log.d(TAG, "size() returning "+mMovies.size());
-        return mMovies.size();
+        int ret = mMovies.size();
+        if (mRestoringState) {
+            Log.d(TAG, "Restoring state, lying about available movie list size.");
+            ret = mRestoreMoviesCount;
+        }
+        Log.d(TAG, "size() returning "+ret);
+        return ret;
     }
 
     public void reset() {
+        if (mRestoringState)
+        {
+            Log.d(TAG, "Can't reset. Restoring state");
+            return;
+        }
         Log.d(TAG, "Reseting movie list.");
         lastLoadedPage = -1;
         if (loading)
@@ -126,7 +142,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             }
 
             /* let recyclerview know */
-            if (changed)
+            if (changed && !mRestoringState)
                 mUpdateListener.OnUpdate(idx, 1);
         }
     }
@@ -134,6 +150,22 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mFavoritesMap.clear();
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SMART_LIST_PAGE_COUNT, lastLoadedPage+1);
+        outState.putInt(SMART_LIST_MOVIE_COUNT, mMovies.size());
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(SMART_LIST_PAGE_COUNT) ) {
+            mRestorePagesToLoad = savedInstanceState.getInt(SMART_LIST_PAGE_COUNT);
+            mRestoreMoviesCount = savedInstanceState.getInt(SMART_LIST_MOVIE_COUNT);
+            mRestoringState = true;
+            Log.d(TAG, "Restoring state with "+mRestorePagesToLoad+" pages, totaling "+mRestoreMoviesCount+" movies");
+            loadPage(0);
+        }
+
     }
 
 
@@ -147,6 +179,9 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     *  Solution: actually very simple, size given == actual list size, no nulls */
     public Movie getMovie(int position) {
        Log.d(TAG, "getMovie() position: "+position+" current size "+mMovies.size());
+       if (mRestoringState)
+           return null;
+
         if (position < mMovies.size())
             return mMovies.get(position);
 
@@ -197,9 +232,17 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
                     int prevSize = mMovies.size();
                     addPageToCache(response.body().page-1, appendList);
                     loading = false;
-                    mUpdateListener.OnUpdate(prevSize, appendList.size());
+                    if(!mRestoringState)
+                        mUpdateListener.OnUpdate(prevSize, appendList.size());
+                    else
+                        mRestorePagesToLoad--;
                 }
                 loading = false;
+                if (mRestoringState && mRestorePagesToLoad == 0) {
+                    finishedSateRestore();
+                }
+                if(mRestoringState && mRestorePagesToLoad > 0)
+                    loadPage(lastLoadedPage+1);
             }
 
             @Override
@@ -207,6 +250,13 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
                 Log.d(TAG, "Failed fetching a page");
             }
         });
+    }
+
+    private void finishedSateRestore() {
+        Log.d(TAG, "Finished restoring SmartMovies to its previous state. Last page:"+lastLoadedPage+" total movies: "+mMovies.size());
+        mRestoringState = false;
+        mUpdateListener.OnUpdate(0, mMovies.size());
+
     }
 
     private synchronized void addPageToCache(int mPageNumber, ArrayList<Movie> movies) {

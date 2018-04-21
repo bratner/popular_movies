@@ -68,6 +68,11 @@ public class FavoritesProvider extends ContentProvider {
         }
         ret.setNotificationUri(getContext().getContentResolver(), uri);
         Log.d(TAG, "Query result: "+ret.getCount()+" rows");
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         return ret;
     }
 

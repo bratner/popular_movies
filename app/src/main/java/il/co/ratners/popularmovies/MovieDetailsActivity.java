@@ -47,8 +47,6 @@ public class MovieDetailsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_movie_details);
-
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         ActionBar actionBar = getSupportActionBar();

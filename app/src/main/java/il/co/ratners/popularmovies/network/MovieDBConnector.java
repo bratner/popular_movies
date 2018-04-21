@@ -40,7 +40,7 @@ public class MovieDBConnector implements MovieDBApi.MovieDBFunctions {
         okHttpBuilder.addInterceptor(httpLoggingInterceptor);
 
         Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-mm-dd")
+                .setDateFormat(MovieDBApi.INPUT_DATE_FIELD_FORMAT)
                 .create();
 
         mRetrofit = new Retrofit.Builder()

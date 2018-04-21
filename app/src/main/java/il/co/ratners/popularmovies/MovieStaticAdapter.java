@@ -29,6 +29,7 @@ public class MovieStaticAdapter extends RecyclerView.Adapter<MovieStaticAdapter.
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String TAG = MovieStaticAdapter.class.getSimpleName();
+    private static final int STATIC_LOADER_ID = 321;
 
     private Cursor mCursor;
     private Context mContext;
@@ -36,7 +37,7 @@ public class MovieStaticAdapter extends RecyclerView.Adapter<MovieStaticAdapter.
 
     public MovieStaticAdapter(Context context) {
         mContext = context;
-        ((GridActivity)mContext).getSupportLoaderManager().initLoader(1, null, this);
+        ((GridActivity)mContext).getSupportLoaderManager().initLoader(STATIC_LOADER_ID, null, this);
     }
 
 
@@ -123,25 +124,36 @@ public class MovieStaticAdapter extends RecyclerView.Adapter<MovieStaticAdapter.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d(TAG, "Creating a CursorLoader for Favorites");
-        CursorLoader loader = new CursorLoader(mContext, FavoritesContract.FavoritesEntry.CONTENT_URI,
-                null,null,null,null);
-        return loader;
+        if (id == STATIC_LOADER_ID) {
+            Log.d(TAG, "Creating a CursorLoader for Favorites");
+            CursorLoader loader = new CursorLoader(mContext, FavoritesContract.FavoritesEntry.CONTENT_URI,
+                    null, null, null, null);
+            return loader;
+        }
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        swapCursor(data);
-        notifyDataSetChanged();
+        if (loader.getId() == STATIC_LOADER_ID ) {
+            Log.d(TAG, "Favorites loader finished.");
+            swapCursor(data);
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(1, null, this);
+        if (loader.getId() == STATIC_LOADER_ID)
+        {
+            Log.d(TAG, "Favorites loader is being reset.");
+            swapCursor(null);
+        }
     }
 
     public void handleResume() {
-        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(1, null, this);
+        Log.d(TAG, "Resuming. Restarting loader");
+        ((GridActivity)mContext).getSupportLoaderManager().restartLoader(STATIC_LOADER_ID, null, this);
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder

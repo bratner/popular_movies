@@ -2,6 +2,7 @@ package il.co.ratners.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -133,6 +134,14 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
         notifyItemRangeChanged(startPos, itemCount);
     }
 
+    public void onSaveInstanceState(Bundle outState) {
+        mMovieList.onSaveInstanceState(outState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        mMovieList.onRestoreInstanceState(savedInstanceState);
+    }
+
     public class MovieViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
         TextView mGridItemTextView;
@@ -174,4 +183,8 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
         notifyDataSetChanged();
     }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
 }

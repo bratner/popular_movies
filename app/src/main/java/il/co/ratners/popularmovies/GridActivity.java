@@ -1,6 +1,7 @@
 package il.co.ratners.popularmovies;
 
 
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ public class GridActivity extends AppCompatActivity {
 
 
     public final static String TAG = GridActivity.class.getSimpleName();
+    private static final String KEY_INSTANCE_STATE_RV_POSITION = "grid_position";
 
 
     private RecyclerView mGridRecyclerView;
@@ -53,6 +55,12 @@ public class GridActivity extends AppCompatActivity {
 
         updateTitle();
 
+        if (savedInstanceState != null) {
+            Log.d(TAG, "Got saved state: " + savedInstanceState);
+//            Parcelable mLayoutManagerSavedState = savedInstanceState.getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
+//            mGridLayoutManager.onRestoreInstanceState(mLayoutManagerSavedState);
+        }
+
     }
 
     private void resetGridAdaptersPagingState()
@@ -64,6 +72,8 @@ public class GridActivity extends AppCompatActivity {
             moviePagedAdapter.notifyDataSetChanged();
         } else {
             mGridLayoutManager.setSpanCount(getResources().getInteger(R.integer.movie_grid_number_of_columns));
+            mGridLayoutManager.setSpanSizeLookup(new GridLayoutManager.DefaultSpanSizeLookup());
+
             favoritesAdapter = new MovieStaticAdapter(this);
             mGridRecyclerView.setAdapter(favoritesAdapter);
         }
@@ -161,6 +171,7 @@ public class GridActivity extends AppCompatActivity {
         else
             favoritesAdapter.handleResume();
 
+
     }
 
     @Override
@@ -172,7 +183,20 @@ public class GridActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+//        outState.putParcelable(KEY_INSTANCE_STATE_RV_POSITION,
+//                mGridLayoutManager.onSaveInstanceState());
+        /* TODO: Save movie list unless it is favorites */
+        if (mPagedGrid) {
+            moviePagedAdapter.onSaveInstanceState(outState);
+        }
         Log.d(TAG, "SAVE_INSTANCE_STATE");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (mPagedGrid)
+            moviePagedAdapter.onRestoreInstanceState(savedInstanceState);
     }
 }
 

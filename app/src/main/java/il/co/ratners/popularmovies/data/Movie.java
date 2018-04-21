@@ -50,7 +50,6 @@ public class Movie {
     public static final String KEY_FAVORITE = "favorite";
     public static final String KEY_JSON = "json";
 
-    private static final String INPUT_DATE_FIELD_FORMAT = "yyyy-mm-dd";
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
 
 
