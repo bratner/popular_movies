@@ -54,7 +54,7 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
             @Override
             public int getSpanSize(int position) {
                 if (isLoadingIndicator(position))
-                    return mContext.getResources().getInteger(R.integer.movie_grid_number_of_columns);
+                    return GridActivity.calculateNoOfColumns(mContext);
                 return 1;
             }
         };

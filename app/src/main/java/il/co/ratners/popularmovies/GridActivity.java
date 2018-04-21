@@ -1,12 +1,14 @@
 package il.co.ratners.popularmovies;
 
 
+import android.content.Context;
 import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,13 +38,11 @@ public class GridActivity extends AppCompatActivity {
 
 
         mGridRecyclerView = findViewById(R.id.movie_grid_rv);
-        //TODO: test this
-//        mGridRecyclerView.setHasFixedSize(true);
-        /* TODO: consider calculating the number of columns based on width in DP and DPI.
-         * Might be better then using a reasonable default for various orientations.
-         */
-        int calculate_number_of_columns = getResources().getInteger(R.integer.movie_grid_number_of_columns);
-        mGridLayoutManager = new GridLayoutManager(this, calculate_number_of_columns);
+        mGridRecyclerView.setHasFixedSize(true);
+
+        int numberOfColumns = calculateNoOfColumns(this);
+        Log.d(TAG, "Number of columns: "+numberOfColumns);
+        mGridLayoutManager = new GridLayoutManager(this, numberOfColumns);
         moviePagedAdapter = new MoviePagedAdapter(this);
         favoritesAdapter = new MovieStaticAdapter(this);
 
@@ -71,7 +71,7 @@ public class GridActivity extends AppCompatActivity {
             mGridRecyclerView.setAdapter(moviePagedAdapter);
             moviePagedAdapter.notifyDataSetChanged();
         } else {
-            mGridLayoutManager.setSpanCount(getResources().getInteger(R.integer.movie_grid_number_of_columns));
+            mGridLayoutManager.setSpanCount(calculateNoOfColumns(this));
             mGridLayoutManager.setSpanSizeLookup(new GridLayoutManager.DefaultSpanSizeLookup());
 
             favoritesAdapter = new MovieStaticAdapter(this);
@@ -197,6 +197,16 @@ public class GridActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if (mPagedGrid)
             moviePagedAdapter.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int scalingFactor = 180;
+        int noOfColumns = (int) (dpWidth / scalingFactor);
+        if(noOfColumns < 2)
+            noOfColumns = 2;
+        return noOfColumns;
     }
 }
 
