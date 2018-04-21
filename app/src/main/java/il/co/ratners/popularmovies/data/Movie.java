@@ -165,7 +165,7 @@ public class Movie implements Parcelable{
         vote_average = in.readString();
         vote_count = in.readInt();
         release_date = (Date)in.readSerializable();
-        favorite = (in.readInt()==1)?true:false;
+        favorite = in.readInt()==1;
     }
     @Override
     public int describeContents() {

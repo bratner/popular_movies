@@ -30,6 +30,10 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
 {
 
     private static final String TAG = MoviePagedAdapter.class.getSimpleName();
+    private static final int TYPE_MOVIE = 0;
+    private static final int TYPE_LOADING = 1;
+    private static final int TYPE_RESTORING = 2;
+
     private Context mContext;
     private SmartMovieList mMovieList;
     private Map<Integer, String> mFavorites;
@@ -38,8 +42,10 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
 
     private boolean isLoadingIndicator(int position)
     {
-        if(mMovieList.getMovie(position) == null) {
+        if(position == mMovieList.size()) {
             Log.d(TAG, "Loading Indicatator at position "+position);
+
+            mMovieList.fetchMoreMovies();
             return true;
         }
         return false;
@@ -65,8 +71,10 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
     @Override
     public int getItemViewType(int position) {
         if (isLoadingIndicator(position))
-            return 1;
-        return 0;
+            return TYPE_LOADING;
+        if (mMovieList.isRestoringState())
+            return TYPE_RESTORING;
+        return TYPE_MOVIE;
     }
 
     @Override
@@ -74,11 +82,14 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
         View v;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         switch (viewType) {
-            case 0:
+            case TYPE_MOVIE:
                 v = inflater.inflate(R.layout.movie_grid_item_layout, parent, false);
                 break;
-            case 1:
+            case TYPE_LOADING:
                 v = inflater.inflate(R.layout.movie_progress_item_layout, parent, false);
+                break;
+            case TYPE_RESTORING:
+                v = inflater.inflate(R.layout.movie_grid_item_layout, parent, false);
                 break;
             default:
                 Log.d(TAG, "onCreateViewHolder() - Inavlid viewType "+viewType);
@@ -91,8 +102,14 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         /* Nothing to set if the are not showing a movie */
         Log.d(TAG, "Binding position "+position);
-        if (holder.getItemViewType() != 0)
+        if (holder.getItemViewType() == TYPE_LOADING)
             return;
+        if (holder.getItemViewType() == TYPE_RESTORING)
+        {
+            holder.mMoviePosterImageView.setImageResource(R.drawable.poster_placeholder);
+            holder.mGridItemTextView.setText("Loading...");
+            return;
+        }
         Movie m = mMovieList.getMovie(position);
         if (m == null) {
             Log.d(TAG, "No movie was found for position "+position);

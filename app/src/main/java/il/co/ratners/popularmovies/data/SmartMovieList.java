@@ -50,6 +50,9 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
     private boolean loading = false;
     private final MovieDBConnector mMovieConnector;
     private SparseArray<String> mFavoritesMap;
+
+
+
     private boolean mRestoringState = false;
     private int mRestorePagesToLoad;
     private int mRestoreMoviesCount;
@@ -169,6 +172,10 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     }
 
+    public void fetchMoreMovies() {
+        getMovie(mMovies.size());
+    }
+
 
     /* Callback mechanism to update the recyclerview when loading is done */
     public interface UpdateListener {
@@ -192,7 +199,7 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private void loadPage(int page) {
 
-        Call<MovieDBApi.MovieDBList> call = null;
+        Call<MovieDBApi.MovieDBList> call;
 
         if(loading)
             return;
@@ -268,6 +275,10 @@ public class SmartMovieList implements LoaderManager.LoaderCallbacks<Cursor> {
             setMovieFavorites();
             lastLoadedPage = mPageNumber;
             Log.d(TAG, "addPageToCache() Done with page "+mPageNumber);
+    }
+
+    public boolean isRestoringState() {
+        return mRestoringState;
     }
 
 }

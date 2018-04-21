@@ -56,7 +56,7 @@ public class FavoritesRequest extends AsyncTask<Void, Void, Object> {
             case DELETE_ACTION:
                 int deleted = mResolver.delete(
                         movieUri,null, null);
-                ret = new Integer(deleted);
+                ret = Integer.valueOf(deleted);
                 break;
             case ADD_ACTION:
                 ContentValues vals = new ContentValues();
