@@ -1,5 +1,7 @@
 package il.co.ratners.popularmovies.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -23,7 +25,7 @@ import il.co.ratners.popularmovies.network.MovieDBApi;
  * and the parser code.
  */
 
-public class Movie {
+public class Movie implements Parcelable{
 
     /* Class constants */
 
@@ -49,6 +51,7 @@ public class Movie {
     public static final String KEY_ID = "id";
     public static final String KEY_FAVORITE = "favorite";
     public static final String KEY_JSON = "json";
+    public static final String KEY_MOVIE = "themovie";
 
     private static final String OUTPUT_DATE_FIELD_FORMAT = "MMMM dd, yyyy";
 
@@ -139,5 +142,47 @@ public class Movie {
         Gson gson = new Gson();
         Movie m = gson.fromJson(s, Movie.class);
         return m;
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    private Movie(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        original_title = in.readString();
+        poster_path = in.readString();
+        backdrop_path = in.readString();
+        overview = in.readString();
+        vote_average = in.readString();
+        vote_count = in.readInt();
+        release_date = (Date)in.readSerializable();
+        favorite = (in.readInt()==1)?true:false;
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(original_title);
+        dest.writeString(poster_path);
+        dest.writeString(backdrop_path);
+        dest.writeString(overview);
+        dest.writeString(vote_average);
+        dest.writeInt(vote_count);
+        dest.writeSerializable(release_date);
+        dest.writeInt(favorite?1:0);
     }
 }

@@ -50,17 +50,8 @@ public class GridActivity extends AppCompatActivity {
            the grid which is the loading indicator
           */
         mGridRecyclerView.setLayoutManager(mGridLayoutManager);
-
         resetGridAdaptersPagingState();
-
         updateTitle();
-
-        if (savedInstanceState != null) {
-            Log.d(TAG, "Got saved state: " + savedInstanceState);
-//            Parcelable mLayoutManagerSavedState = savedInstanceState.getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
-//            mGridLayoutManager.onRestoreInstanceState(mLayoutManagerSavedState);
-        }
-
     }
 
     private void resetGridAdaptersPagingState()

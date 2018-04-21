@@ -182,18 +182,8 @@ public class MovieStaticAdapter extends RecyclerView.Adapter<MovieStaticAdapter.
 
             Log.d(TAG, "Clicked on position " + position + " - " + m.getTitle());
             Intent i = new Intent(mContext, MovieDetailsActivity.class);
-            String url = MovieDBApi.getMovieImageURL(m.getPoster_path());
-
-            i.putExtra(Movie.KEY_ID, m.getId());
-            i.putExtra(Movie.KEY_TITLE, m.getTitle());
-            i.putExtra(Movie.KEY_ORIGINAL_TITLE, m.getOriginalTitle());
-            i.putExtra(Movie.KEY_OVERVIEW, m.getOverview());
-            i.putExtra(Movie.KEY_RATING, m.getRating());
-            i.putExtra(Movie.KEY_RELEASE_DATE, m.getFormattedDate());
-            i.putExtra(Movie.KEY_POSTER_URL, url);
-            i.putExtra(Movie.KEY_FAVORITE, m.isFavorite());
-            i.putExtra(Movie.KEY_JSON, m.toJson());
-            Log.d(TAG, "Movie to JSON " + m.toJson());
+            //String url = MovieDBApi.getMovieImageURL(m.getPoster_path());
+            i.putExtra(Movie.KEY_MOVIE, m);
             mContext.startActivity(i);
         }
     }

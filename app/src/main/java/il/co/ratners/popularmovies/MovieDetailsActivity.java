@@ -38,9 +38,9 @@ public class MovieDetailsActivity extends AppCompatActivity
     private ActivityMovieDetailsBinding mBinding;
     private MovieDBConnector mMovieDB;
     private int mMovieId = NO_ID;
-    private boolean mFavoirte;
-    private String mTitle;
     private String mJson;
+
+    private Movie mMovie;
 
 
 
@@ -52,30 +52,26 @@ public class MovieDetailsActivity extends AppCompatActivity
         ActionBar actionBar = getSupportActionBar();
         Intent i = getIntent();
 
+        mMovie = i.getParcelableExtra(Movie.KEY_MOVIE);
 
-        String originalTitle = i.getStringExtra(Movie.KEY_ORIGINAL_TITLE);
-        String overview = i.getStringExtra(Movie.KEY_OVERVIEW);
-        String releaseDate = i.getStringExtra(Movie.KEY_RELEASE_DATE);
-        String rating = i.getStringExtra(Movie.KEY_RATING);
-        mTitle = i.getStringExtra(Movie.KEY_TITLE);
-        String url = i.getStringExtra(Movie.KEY_POSTER_URL);
-        mMovieId = i.getIntExtra(Movie.KEY_ID, NO_ID);
-        mFavoirte = i.getBooleanExtra(Movie.KEY_FAVORITE, false);
-        mJson = i.getStringExtra(Movie.KEY_JSON);
+        String url = MovieDBApi.getMovieImageURL(mMovie.getPoster_path());
+        mMovieId = mMovie.getId();
+        mJson = mMovie.toJson();
 
-        if (mTitle != null)
-            actionBar.setTitle(mTitle);
+        if (mMovie.getTitle() != null)
+            actionBar.setTitle(mMovie.getTitle());
 
-        mBinding.detailsText.tvOriginalTitle.setText(originalTitle);
-        mBinding.detailsText.tvOverview.setText(overview);
-        mBinding.detailsText.tvRating.setText(rating);
-        mBinding.detailsText.tvReleaseDate.setText(releaseDate);
+        mBinding.detailsText.tvOriginalTitle.setText(mMovie.getOriginalTitle());
+        mBinding.detailsText.tvOverview.setText(mMovie.getOverview());
+        mBinding.detailsText.tvRating.setText(mMovie.getRating());
+        mBinding.detailsText.tvReleaseDate.setText(mMovie.getFormattedDate());
+
         Picasso.with(this).load(url)
                 .placeholder(R.drawable.poster_placeholder)
                 .into(mBinding.ivMoviePoster);
 
         mBinding.detailsText.swFavorite.setOnCheckedChangeListener(this);
-        mBinding.detailsText.swFavorite.setChecked(mFavoirte);
+        mBinding.detailsText.swFavorite.setChecked(mMovie.isFavorite());
 
         mMovieDB = new MovieDBConnector(this);
 
@@ -85,7 +81,6 @@ public class MovieDetailsActivity extends AppCompatActivity
             mMovieDB.getMovieReviews(mMovieId).enqueue(reviewListCallback());
             queryFavorite();
         }
-       // String posterURL = i.getStringExtra(R.string.key_poster);
     }
 
 
