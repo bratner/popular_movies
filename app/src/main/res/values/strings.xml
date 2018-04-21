@@ -28,4 +28,5 @@
     <string name="failed_fetching_review">Failed fetching review list</string>
     <string name="failed_fetching_trailers">Failed fetching trailer list</string>
     <string name="failed_fetching_movies">Unable to fetch movie list</string>
+    <string name="loading">Loading...</string>
 </resources>

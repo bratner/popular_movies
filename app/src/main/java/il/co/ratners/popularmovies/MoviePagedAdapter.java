@@ -107,7 +107,7 @@ class MoviePagedAdapter extends RecyclerView.Adapter<MoviePagedAdapter.MovieView
         if (holder.getItemViewType() == TYPE_RESTORING)
         {
             holder.mMoviePosterImageView.setImageResource(R.drawable.poster_placeholder);
-            holder.mGridItemTextView.setText("Loading...");
+            holder.mGridItemTextView.setText(R.string.loading);
             return;
         }
         Movie m = mMovieList.getMovie(position);
